@@ -299,15 +299,15 @@ describe( 'Inserting blocks', () => {
 		);
 		await browseAll.click();
 		const inserterMenuInputSelector =
-			'.edit-post-layout__inserter-panel .block-editor-inserter__search-input';
+			'.edit-post-editor__inserter-panel .block-editor-inserter__search-input';
 		const inserterMenuSearchInput = await page.waitForSelector(
 			inserterMenuInputSelector
 		);
 		inserterMenuSearchInput.type( 'cover' );
-		// Wait for the search results to load after typing the full search
-		// term. Previously this test would sometimes accidentally tab to the
-		// button for a code block.
-		await page.evaluate( () => new Promise( window.requestIdleCallback ) );
+		await page.waitForSelector(
+			'.block-editor-block-types-list .editor-block-list-item-cover'
+		);
+		// clicking may be too quick and may select a detached node.
 		await page.keyboard.press( 'Tab' );
 		await page.keyboard.press( 'Tab' );
 		await page.keyboard.press( 'Enter' );
@@ -374,7 +374,7 @@ describe( 'Inserting blocks', () => {
 
 		// The inserter panel should've closed.
 		const inserterPanels = await page.$$(
-			'.edit-post-layout__inserter-panel'
+			'.edit-post-editor__inserter-panel'
 		);
 		expect( inserterPanels.length ).toBe( 0 );
 
