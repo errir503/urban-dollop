@@ -1,0 +1,318 @@
+/**
+ * Editor only CSS.
+ */
+
+// Undo default editor styles.
+// These need extra specificity.
+.editor-styles-wrapper .wp-block-navigation {
+	ul {
+		margin-top: 0;
+		margin-bottom: 0;
+		margin-left: 0;
+		padding-left: 0;
+	}
+}
+
+
+/**
+ * Submenus.
+ */
+
+// Ensure sub-menus stay open and visible when a nested block is selected.
+.wp-block-navigation__container.is-parent-of-selected-block {
+	visibility: visible;
+	opacity: 1;
+}
+
+// Low specificity default to ensure background color applies to submenus.
+.wp-block-navigation__container,
+.wp-block-navigation-link {
+	background-color: inherit;
+}
+
+// Only show the flyout on hover if the parent menu item is selected.
+.wp-block-navigation:not(.is-selected):not(.has-child-selected) .has-child:hover {
+	> .wp-block-navigation-link__container {
+		opacity: 0;
+		visibility: hidden;
+	}
+}
+
+// Styles for submenu flyout.
+.has-child {
+	&.is-selected,
+	&.has-child-selected {
+		> .wp-block-navigation-link__container {
+			opacity: 1;
+			visibility: visible;
+		}
+	}
+}
+
+// Show a submenu when generally dragging (is-dragging-components-draggable) if that
+// submenu has children (has-child) and is being dragged within (is-dragging-within).
+.is-dragging-components-draggable .has-child.is-dragging-within {
+	> .wp-block-navigation-link__container {
+		opacity: 1;
+		visibility: visible;
+	}
+}
+
+// IE fix for submenu visibility on parent focus.
+.is-editing > .wp-block-navigation__container {
+	visibility: visible;
+	opacity: 1;
+	display: flex;
+	flex-direction: column;
+}
+
+.is-dragging-components-draggable .wp-block-navigation-link > .wp-block-navigation__container {
+	// Set opacity to 1 to still be able to show the draggable chip.
+	opacity: 1;
+	visibility: hidden;
+
+	// Show the chip but hide the submenu list.
+	.block-editor-block-draggable-chip-wrapper {
+		visibility: visible;
+	}
+}
+
+/**
+ * Colors Selector component
+ */
+
+$colors-selector-size: 22px;
+.block-library-colors-selector {
+	width: auto;
+
+	// Toolbar colors-selector button.
+	.block-library-colors-selector__toggle {
+		display: block;
+		margin: 0 auto;
+		padding: 3px;
+		width: auto;
+	}
+
+	// Button container.
+	.block-library-colors-selector__icon-container {
+		height: 30px;
+		position: relative;
+		margin: 0 auto;
+		padding: 3px;
+		display: flex;
+		align-items: center;
+		border-radius: 4px;
+	}
+
+	.block-library-colors-selector__state-selection {
+		margin-left: auto;
+		margin-right: auto;
+
+		// colors-selector - selection status.
+		border-radius: $colors-selector-size / 2;
+		box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.2);
+
+		width: $colors-selector-size;
+		min-width: $colors-selector-size;
+		height: $colors-selector-size;
+		min-height: $colors-selector-size;
+		line-height: ( $colors-selector-size - 2 );
+		padding: 2px;
+
+		> svg {
+			// Override `min-width: $button-size-small` on toolbar-group/style.scss
+			min-width: auto !important;
+		}
+
+		// Styling icon color.
+		&.has-text-color {
+			> svg,
+			> svg path {
+				color: inherit;
+			}
+		}
+	}
+}
+
+// Colors Selector Popover.
+$color-control-label-height: 20px;
+.block-library-colors-selector__popover {
+	.color-palette-controller-container {
+		padding: 16px;
+	}
+
+	.components-base-control__label {
+		height: $color-control-label-height;
+		line-height: $color-control-label-height;
+	}
+
+	.component-color-indicator {
+		float: right;
+		margin-top: 2px;
+	}
+
+	.components-panel__body-title {
+		display: none;
+	}
+}
+
+.wp-block-navigation .block-editor-button-block-appender {
+	justify-content: flex-start;
+}
+
+
+/**
+ * Setup state
+ */
+
+// Ensure that an empty block has space around the appender.
+.wp-block-navigation-placeholder,
+.wp-block-navigation-placeholder__preview,
+.is-selected .wp-block-navigation__container {
+	min-height: $grid-unit-05 + $grid-unit-05 + $button-size;
+}
+
+// Spinner.
+.wp-block-navigation-placeholder .components-spinner {
+	margin-top: -4px;
+	margin-left: 4px;
+	vertical-align: middle;
+	margin-right: 7px;
+}
+
+// Unselected state.
+.wp-block-navigation-placeholder__preview {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	transition: all 0.1s ease-in-out;
+	@include reduce-motion("transition");
+
+	// Style skeleton elements.
+	// Needs specificity.
+	.wp-block-navigation-link.wp-block-navigation-link {
+		border-radius: $radius-block-ui;
+		background: currentColor;
+		min-width: 72px;
+		height: $grid-unit-20;
+		margin: $grid-unit-15 $grid-unit-30 $grid-unit-15 0;
+	}
+
+	svg {
+		fill: currentColor;
+	}
+
+	.wp-block-navigation-link.wp-block-navigation-link,
+	svg {
+		opacity: 0.3;
+	}
+
+	.is-selected & {
+		// Don't show the preview boxes for an empty nav block.
+		opacity: 0;
+
+		// Need to show the placeholder box above the preview boxes.
+		position: absolute;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		left: 0;
+	}
+}
+
+// Selected state.
+.wp-block-navigation-placeholder__controls {
+	padding: $grid-unit-05 $grid-unit-10;
+	border-radius: $radius-block-ui;
+	background-color: $white;
+	box-shadow: inset 0 0 0 $border-width $gray-900;
+	flex-direction: row;
+	align-items: center;
+	display: none;
+	position: relative;
+	z-index: 1;
+
+	// If an ancestor has a text-decoration property applied, it is inherited regardless of
+	// the specificity of a child element. Only pulling the child out of the flow fixes it.
+	// See also https://www.w3.org/TR/CSS21/text.html#propdef-text-decoration.
+	float: left;
+	width: 100%;
+
+	// Show when selected.
+	.is-selected & {
+		display: flex;
+	}
+
+	// Vertical navigation.
+	.is-vertical & {
+		.wp-block-navigation-placeholder__actions {
+			flex-direction: column;
+		}
+	}
+
+	// Both selected and vertical.
+	.is-selected.is-vertical & {
+		display: inline-flex; // This makes the white box not take up all available space.
+	}
+
+	.wp-block-navigation-placeholder__icon {
+		margin-right: $grid-unit-15;
+		height: $button-size; // Prevents jumpiness.
+	}
+
+	// Block title
+	.wp-block-navigation-placeholder__actions__indicator {
+		margin-right: $grid-unit-15;
+		padding: ($grid-unit-15 / 2) 0;
+		align-items: center;
+		justify-content: flex-start;
+		display: none;
+		line-height: 0;
+
+		// line up with the icon in the toolbar.
+		margin-left: $grid-unit-05 + $border-width;
+
+		svg {
+			margin-right: $grid-unit-05;
+		}
+
+		.is-vertical & {
+			margin-bottom: $grid-unit-05;
+			margin-left: 0;
+		}
+
+		@include break-small {
+			display: inline-flex;
+		}
+	}
+}
+
+// When block is vertical.
+.is-vertical .wp-block-navigation-placeholder,
+.is-vertical .wp-block-navigation-placeholder__preview,
+.is-vertical .wp-block-navigation-placeholder__controls {
+	min-height: $icon-size + ($grid-unit-20 + $grid-unit-05 + $grid-unit-15 + $grid-unit-15) * 3;
+}
+
+.is-vertical .wp-block-navigation-placeholder__preview,
+.is-vertical .wp-block-navigation-placeholder__controls {
+	flex-direction: column;
+	align-items: flex-start;
+}
+
+.wp-block-navigation-placeholder__actions {
+	display: flex;
+	font-size: $default-font-size;
+
+	.components-button.components-dropdown-menu__toggle.has-icon {
+		padding: ($grid-unit-15 / 2) $grid-unit-05 ($grid-unit-15 / 2) $grid-unit-15;
+		display: flex;
+		flex-direction: row-reverse; // This puts the chevron, which is hidden from screen readers, on the right.
+	}
+
+	// Margins.
+	.components-dropdown,
+	> .components-button {
+		margin-right: $grid-unit-15;
+	}
+}

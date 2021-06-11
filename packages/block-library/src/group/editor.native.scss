@@ -1,0 +1,51 @@
+.groupPlaceholder {
+	padding: $block-selected-to-content;
+	margin: $block-edge-to-content;
+	margin-left: $block-selected-child-margin;
+	margin-right: $block-selected-child-margin;
+	background-color: $white;
+	border: $border-width dashed $gray;
+	border-radius: 4px;
+}
+
+.groupPlaceholderDark {
+	background-color: $black;
+	border: $border-width dashed $gray-70;
+}
+
+.marginVerticalDense {
+	margin-top: $block-selected-child-margin;
+	margin-bottom: $block-selected-child-margin;
+}
+
+.marginHorizontalNone {
+	margin-left: 0;
+	margin-right: 0;
+}
+
+.innerBlocks {
+	margin-bottom: $block-edge-to-content;
+}
+
+.fullWidth {
+	margin-left: $block-edge-to-content;
+	margin-right: $block-edge-to-content;
+}
+
+.groupAppender {
+	margin-left: $grid-unit-20;
+	margin-right: $grid-unit-20;
+}
+
+.wideGroupAppender {
+	margin-left: $grid-unit-10;
+	margin-right: $grid-unit-10;
+}
+
+.hasBackgroundAppender {
+	padding-bottom: $grid-unit-30;
+}
+
+.isLastInnerBlockSelected {
+	padding-bottom: 0;
+}

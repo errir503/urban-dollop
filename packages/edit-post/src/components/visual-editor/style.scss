@@ -1,0 +1,75 @@
+.edit-post-visual-editor {
+	position: relative;
+
+
+	// The button element easily inherits styles that are meant for the editor style.
+	// These rules enhance the specificity to reduce that inheritance.
+	// This is duplicated in edit-site.
+	& .components-button {
+		font-family: $default-font;
+		font-size: $default-font-size;
+		padding: 6px 12px;
+
+		&.is-tertiary,
+		&.has-icon {
+			padding: 6px;
+		}
+	}
+
+	flex: 1 1 auto;
+
+	// In IE11 flex-basis: 100% cause a bug where the metaboxes area overlap with the content area.
+	// But it works as expected without it.
+	// The flex-basis is needed for the other browsers to make sure the content area is full-height.
+	@supports (position: sticky) {
+		flex-basis: 100%;
+	}
+
+}
+
+.editor-styles-wrapper {
+	// Default background color so that grey .edit-post-editor-regions__content
+	// color doesn't show through.
+	background-color: $white;
+
+	cursor: text;
+
+	> * {
+		cursor: auto;
+	}
+
+	> div {
+		min-height: 100%;
+	}
+}
+
+// Ideally this wrapper div is not needed but if we want to match the positioning of blocks
+// .block-editor-block-list__layout and block-editor-block-list__block
+// We need to have two DOM elements.
+.edit-post-visual-editor__post-title-wrapper {
+	.editor-post-title {
+		// Add some top margin.
+		margin-top: 2em;
+
+		// Center.
+		margin-left: auto;
+		margin-right: auto;
+
+		// Margins between the title and the first block, or appender, do not collapse.
+		// By explicitly setting this to zero, we avoid "double margin".
+		margin-bottom: 0;
+	}
+}
+
+.edit-post-visual-editor__exit-template-mode {
+	position: absolute;
+	top: $grid-unit-10;
+	left: $grid-unit-10;
+	color: $white;
+
+	&:active:not([aria-disabled="true"]),
+	&:focus:not([aria-disabled="true"]),
+	&:hover {
+		color: $gray-100;
+	}
+}
