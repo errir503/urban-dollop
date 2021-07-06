@@ -3,7 +3,7 @@
  */
 import { __, sprintf } from '@wordpress/i18n';
 import { useSelect, useDispatch } from '@wordpress/data';
-import { Dropdown, ToolbarItem, Button } from '@wordpress/components';
+import { Dropdown, Button } from '@wordpress/components';
 import { chevronDown } from '@wordpress/icons';
 
 /**
@@ -14,6 +14,7 @@ import { store as blockEditorStore } from '@wordpress/block-editor';
 import { store as editorStore } from '@wordpress/editor';
 import DeleteTemplate from './delete-template';
 import EditTemplateTitle from './edit-template-title';
+import TemplateDescription from './template-description';
 
 function TemplateTitle() {
 	const { template, isEditing, title } = useSelect( ( select ) => {
@@ -46,55 +47,50 @@ function TemplateTitle() {
 	}
 
 	return (
-		<ToolbarItem>
-			{ ( toolbarItemHTMLProps ) => {
-				return (
-					<Dropdown
-						className="edit-post-template-top-area"
-						position="bottom center"
-						contentClassName="edit-post-template-top-area__popover"
-						renderToggle={ ( { onToggle } ) => (
-							<>
-								<Button
-									{ ...toolbarItemHTMLProps }
-									className="edit-post-template-post-title"
-									isLink
-									showTooltip
-									label={ sprintf(
-										/* translators: %s: Title of the referring post, e.g: "Hello World!" */
-										__( 'Edit %s' ),
-										title
-									) }
-									onClick={ () => {
-										clearSelectedBlock();
-										setIsEditingTemplate( false );
-									} }
-								>
-									{ title }
-								</Button>
-								<Button
-									{ ...toolbarItemHTMLProps }
-									className="edit-post-template-title"
-									isLink
-									icon={ chevronDown }
-									showTooltip
-									onClick={ onToggle }
-									label={ __( 'Template Options' ) }
-								>
-									{ templateTitle }
-								</Button>
-							</>
+		<div className="edit-post-template-top-area">
+			<Button
+				className="edit-post-template-post-title"
+				isLink
+				showTooltip
+				label={ sprintf(
+					/* translators: %s: Title of the referring post, e.g: "Hello World!" */
+					__( 'Edit %s' ),
+					title
+				) }
+				onClick={ () => {
+					clearSelectedBlock();
+					setIsEditingTemplate( false );
+				} }
+			>
+				{ title }
+			</Button>
+			<Dropdown
+				position="bottom center"
+				contentClassName="edit-post-template-top-area__popover"
+				renderToggle={ ( { onToggle } ) => (
+					<Button
+						className="edit-post-template-title"
+						isLink
+						icon={ chevronDown }
+						showTooltip
+						onClick={ onToggle }
+						label={ __( 'Template Options' ) }
+					>
+						{ templateTitle }
+					</Button>
+				) }
+				renderContent={ () => (
+					<>
+						{ template.has_theme_file ? (
+							<TemplateDescription />
+						) : (
+							<EditTemplateTitle />
 						) }
-						renderContent={ () => (
-							<>
-								<EditTemplateTitle />
-								<DeleteTemplate />
-							</>
-						) }
-					/>
-				);
-			} }
-		</ToolbarItem>
+						<DeleteTemplate />
+					</>
+				) }
+			/>
+		</div>
 	);
 }
 

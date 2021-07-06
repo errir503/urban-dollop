@@ -35,7 +35,6 @@ import { link } from '@wordpress/icons';
 import richTextStyle from './rich-text.scss';
 import styles from './editor.scss';
 import ColorBackground from './color-background';
-import ColorEdit from './color-edit';
 
 const MIN_BORDER_RADIUS_VALUE = 0;
 const MAX_BORDER_RADIUS_VALUE = 50;
@@ -235,11 +234,18 @@ class ButtonEdit extends Component {
 		setAttributes( { text: value } );
 	}
 
-	onChangeBorderRadius( value ) {
-		const { setAttributes } = this.props;
-		setAttributes( {
-			borderRadius: value,
-		} );
+	onChangeBorderRadius( newRadius ) {
+		const { setAttributes, attributes } = this.props;
+		const { style } = attributes;
+		const newStyle = {
+			...style,
+			border: {
+				...style?.border,
+				radius: newRadius,
+			},
+		};
+
+		setAttributes( { style: newStyle } );
 	}
 
 	onShowLinkSettings() {
@@ -373,7 +379,7 @@ class ButtonEdit extends Component {
 		const {
 			placeholder,
 			text,
-			borderRadius,
+			style,
 			url,
 			align = 'center',
 			width,
@@ -384,6 +390,8 @@ class ButtonEdit extends Component {
 		if ( parentWidth === 0 ) {
 			return null;
 		}
+
+		const borderRadius = style?.border?.radius;
 
 		const borderRadiusValue = Number.isInteger( borderRadius )
 			? borderRadius
@@ -491,7 +499,6 @@ class ButtonEdit extends Component {
 							</ToolbarGroup>
 						</BlockControls>
 						{ this.getLinkSettings( false ) }
-						<ColorEdit { ...this.props } />
 						<InspectorControls>
 							<PanelBody title={ __( 'Border Settings' ) }>
 								<RangeControl

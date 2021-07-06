@@ -14,6 +14,7 @@ export {
 export { default as __experimentalBlockFullHeightAligmentControl } from './block-full-height-alignment-control';
 export { default as __experimentalBlockAlignmentMatrixControl } from './block-alignment-matrix-control';
 export { default as BlockBreadcrumb } from './block-breadcrumb';
+export { default as __experimentalBlockContentOverlay } from './block-content-overlay';
 export { BlockContextProvider } from './block-context';
 export {
 	default as BlockControls,
@@ -34,7 +35,11 @@ export {
 	BlockVerticalAlignmentControl,
 } from './block-vertical-alignment-control';
 export { default as __experimentalBorderStyleControl } from './border-style-control';
-export { default as ButtonBlockerAppender } from './button-block-appender';
+export {
+	// This is a typo, but kept here for back-compat.
+	ButtonBlockerAppender,
+	default as ButtonBlockAppender,
+} from './button-block-appender';
 export { default as ColorPalette } from './color-palette';
 export { default as ColorPaletteControl } from './color-palette/control';
 export { default as ContrastChecker } from './contrast-checker';

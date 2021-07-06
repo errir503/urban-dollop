@@ -161,6 +161,9 @@ function useAutocomplete( {
 
 			if ( 'replace' === action ) {
 				onReplace( [ value ] );
+				// When replacing, the component will unmount, so don't reset
+				// state (below) on an unmounted component.
+				return;
 			} else if ( 'insert-at-caret' === action ) {
 				insertCompletion( value );
 			}
@@ -374,12 +377,13 @@ function useAutocomplete( {
 	const activeId = isExpanded
 		? `components-autocomplete-item-${ instanceId }-${ selectedKey }`
 		: null;
+	const hasSelection = record.start !== undefined;
 
 	return {
 		listBoxId,
 		activeId,
 		onKeyDown: handleKeyDown,
-		popover: AutocompleterUI && (
+		popover: hasSelection && AutocompleterUI && (
 			<AutocompleterUI
 				className={ className }
 				filterValue={ filterValue }
