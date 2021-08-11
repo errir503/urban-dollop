@@ -479,11 +479,36 @@ export function setIsEditingTemplate( value ) {
 }
 
 /**
- * Switches to the template mode.
+ * Potentially create a block based template and switches to the template mode.
  *
- * @param {boolean} newTemplate Is new template.
+ * @param {Object?} template template to create and assign before switching.
  */
-export function* __unstableSwitchToTemplateMode( newTemplate = false ) {
+export function* __unstableSwitchToTemplateMode( template ) {
+	if ( !! template ) {
+		const savedTemplate = yield controls.dispatch(
+			coreStore,
+			'saveEntityRecord',
+			'postType',
+			'wp_template',
+			template
+		);
+		const post = yield controls.select(
+			editorStore.name,
+			'getCurrentPost'
+		);
+
+		yield controls.dispatch(
+			coreStore,
+			'editEntityRecord',
+			'postType',
+			post.type,
+			post.id,
+			{
+				template: savedTemplate.slug,
+			}
+		);
+	}
+
 	yield setIsEditingTemplate( true );
 
 	const isWelcomeGuideActive = yield controls.select(
@@ -493,7 +518,7 @@ export function* __unstableSwitchToTemplateMode( newTemplate = false ) {
 	);
 
 	if ( ! isWelcomeGuideActive ) {
-		const message = newTemplate
+		const message = !! template
 			? __( "Custom template created. You're in template mode now." )
 			: __(
 					'Editing template. Changes made here affect all posts and pages that use the template.'
@@ -502,31 +527,4 @@ export function* __unstableSwitchToTemplateMode( newTemplate = false ) {
 			type: 'snackbar',
 		} );
 	}
-}
-
-/**
- * Create a block based template.
- *
- * @param {Object?} template Template to create and assign.
- */
-export function* __unstableCreateTemplate( template ) {
-	const savedTemplate = yield controls.dispatch(
-		coreStore,
-		'saveEntityRecord',
-		'postType',
-		'wp_template',
-		template
-	);
-	const post = yield controls.select( editorStore.name, 'getCurrentPost' );
-
-	yield controls.dispatch(
-		coreStore,
-		'editEntityRecord',
-		'postType',
-		post.type,
-		post.id,
-		{
-			template: savedTemplate.slug,
-		}
-	);
 }

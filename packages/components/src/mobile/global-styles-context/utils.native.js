@@ -7,7 +7,6 @@ export const BLOCK_STYLE_ATTRIBUTES = [
 	'textColor',
 	'backgroundColor',
 	'style',
-	'color',
 ];
 
 // Mapping style properties name to native
