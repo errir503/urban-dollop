@@ -27,7 +27,7 @@ import { store as blockEditorStore } from '../store';
 import { InspectorControls } from '../components';
 import useSetting from '../components/use-setting';
 import { LayoutStyle } from '../components/block-list/layout';
-import { Head } from '../components/block-list/head';
+import BlockList from '../components/block-list';
 import { getLayoutType, getLayoutTypes } from '../layouts';
 
 const layoutBlockSupportKey = '__experimentalLayout';
@@ -166,25 +166,29 @@ export const withInspectorControls = createHigherOrderComponent(
  */
 export const withLayoutStyles = createHigherOrderComponent(
 	( BlockListBlock ) => ( props ) => {
-		const { name, attributes } = props;
+		const { name, attributes, clientId } = props;
 		const supportLayout = hasBlockSupport( name, layoutBlockSupportKey );
 		const id = useInstanceId( BlockListBlock );
 		const defaultLayout = useSetting( 'layout' ) || {};
-		if ( ! supportLayout ) {
-			return <BlockListBlock { ...props } />;
-		}
+		const hasInnerBlocks = useSelect(
+			( select ) => {
+				const { getBlockCount } = select( blockEditorStore );
+				return getBlockCount( clientId ) > 0;
+			},
+			[ clientId ]
+		);
+		const element = useContext( BlockList.__unstableElementContext );
+		const shouldRenderLayoutStyles = supportLayout || hasInnerBlocks;
 		const { layout = {} } = attributes;
 		const usedLayout = !! layout && layout.inherit ? defaultLayout : layout;
-		const className = classnames(
-			props?.className,
-			`wp-container-${ id }`
-		);
-
-		const element = useContext( Head.context );
+		const className = classnames( props?.className, {
+			[ `wp-container-${ id }` ]: shouldRenderLayoutStyles,
+		} );
 
 		return (
 			<>
-				{ element &&
+				{ shouldRenderLayoutStyles &&
+					element &&
 					createPortal(
 						<LayoutStyle
 							selector={ `.wp-container-${ id }` }
