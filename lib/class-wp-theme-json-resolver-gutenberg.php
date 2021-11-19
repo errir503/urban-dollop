@@ -117,7 +117,7 @@ class WP_Theme_JSON_Resolver_Gutenberg {
 
 		$config     = self::read_json_file( __DIR__ . '/theme.json' );
 		$config     = self::translate( $config );
-		self::$core = new WP_Theme_JSON_Gutenberg( $config, 'core' );
+		self::$core = new WP_Theme_JSON_Gutenberg( $config, 'default' );
 
 		return self::$core;
 	}
@@ -171,7 +171,7 @@ class WP_Theme_JSON_Resolver_Gutenberg {
 				// If the theme does not have any palette, we still want to show the core one.
 				$default_palette = true;
 			}
-			$theme_support_data['settings']['color']['corePalette'] = $default_palette;
+			$theme_support_data['settings']['color']['defaultPalette'] = $default_palette;
 
 			$default_gradients = false;
 			if ( current_theme_supports( 'default-gradient-presets' ) ) {
@@ -181,7 +181,7 @@ class WP_Theme_JSON_Resolver_Gutenberg {
 				// If the theme does not have any gradients, we still want to show the core ones.
 				$default_gradients = true;
 			}
-			$theme_support_data['settings']['color']['coreGradients'] = $default_gradients;
+			$theme_support_data['settings']['color']['defaultGradients'] = $default_gradients;
 		}
 		$with_theme_supports = new WP_Theme_JSON_Gutenberg( $theme_support_data );
 		$with_theme_supports->merge( self::$theme );
@@ -283,8 +283,8 @@ class WP_Theme_JSON_Resolver_Gutenberg {
 
 	/**
 	 * There are three sources of data (origins) for a site:
-	 * core, theme, and user. The user's has higher priority
-	 * than the theme's, and the theme's higher than core's.
+	 * default, theme, and user. The user's has higher priority
+	 * than the theme's, and the theme's higher than defaults's.
 	 *
 	 * Unlike the getters {@link get_core_data},
 	 * {@link get_theme_data}, and {@link get_user_data},
