@@ -325,6 +325,13 @@
 	}
 }
 
+// Allow menu items to be spaced out by space-between when only navigation links are present.
+.wp-block-navigation__container:only-child,
+.wp-block-page-list:only-child {
+	flex-grow: 1;
+}
+
+
 /**
  * Mobile menu.
  */
@@ -343,6 +350,13 @@
 		flex-direction: var(--layout-direction, initial);
 		justify-content: var(--layout-justify, initial);
 		align-items: var(--layout-align, initial);
+	}
+
+	// If the responsive wrapper is present but overlay is not open,
+	// overlay styles shouldn't apply.
+	&:not(.is-menu-open.is-menu-open) {
+		color: inherit !important;
+		background-color: inherit !important;
 	}
 
 	// Overlay menu.
@@ -432,9 +446,9 @@
 
 		// Remove background colors for items inside the overlay menu.
 		// Has to be !important to override global styles.
-		// @todo: We should revisit this so that the overlay colors can be applied, instead of the background.
 		.wp-block-navigation-item .wp-block-navigation__submenu-container,
-		.wp-block-navigation-item {
+		.wp-block-navigation-item,
+		.wp-block-page-list {
 			color: inherit !important;
 			background: transparent !important;
 		}

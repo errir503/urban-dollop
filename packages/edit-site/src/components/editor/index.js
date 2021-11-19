@@ -33,6 +33,7 @@ import { ShortcutProvider } from '@wordpress/keyboard-shortcuts';
  */
 import Header from '../header';
 import { SidebarComplementaryAreaFills } from '../sidebar';
+import NavigationSidebar from '../navigation-sidebar';
 import BlockEditor from '../block-editor';
 import KeyboardShortcuts from '../keyboard-shortcuts';
 import URLQueryController from '../url-query-controller';
@@ -46,6 +47,7 @@ import { GlobalStylesProvider } from '../global-styles/global-styles-provider';
 
 const interfaceLabels = {
 	secondarySidebar: __( 'Block Library' ),
+	drawer: __( 'Navigation Sidebar' ),
 };
 
 function Editor( { initialSettings, onError } ) {
@@ -218,6 +220,11 @@ function Editor( { initialSettings, onError } ) {
 													sidebarIsOpened && (
 														<ComplementaryArea.Slot scope="core/edit-site" />
 													)
+												}
+												drawer={
+													<NavigationSidebar
+														defaultIsOpen={ false }
+													/>
 												}
 												header={
 													<Header
