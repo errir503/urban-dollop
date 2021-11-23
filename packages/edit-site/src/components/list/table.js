@@ -6,9 +6,6 @@ import { store as coreStore } from '@wordpress/core-data';
 import { __, sprintf } from '@wordpress/i18n';
 import {
 	VisuallyHidden,
-	FlexItem,
-	__experimentalHStack as HStack,
-	__experimentalHeading as Heading,
 	DropdownMenu,
 	MenuGroup,
 	MenuItem,
@@ -49,10 +46,13 @@ export default function Table( { templateType } ) {
 			} = select( coreStore );
 
 			return {
-				templates: getEntityRecords( 'postType', templateType ),
+				templates: getEntityRecords( 'postType', templateType, {
+					per_page: -1,
+				} ),
 				isLoading: ! hasFinishedResolution( 'getEntityRecords', [
 					'postType',
 					templateType,
+					{ per_page: -1 },
 				] ),
 				postType: getPostType( templateType ),
 			};
@@ -77,26 +77,42 @@ export default function Table( { templateType } ) {
 	}
 
 	return (
-		<ul className="edit-site-list-table">
-			<HStack className="edit-site-list-table-head" as="li">
-				<FlexItem className="edit-site-list-table-column">
-					<Heading level={ 4 }>{ __( 'Template' ) }</Heading>
-				</FlexItem>
-				<FlexItem className="edit-site-list-table-column">
-					<Heading level={ 4 }>{ __( 'Added by' ) }</Heading>
-				</FlexItem>
-				<FlexItem className="edit-site-list-table-column">
-					<VisuallyHidden>{ __( 'Actions' ) }</VisuallyHidden>
-				</FlexItem>
-			</HStack>
+		// These explicit aria roles are needed for Safari.
+		// See https://developer.mozilla.org/en-US/docs/Web/CSS/display#tables
+		<table className="edit-site-list-table" role="table">
+			<thead>
+				<tr className="edit-site-list-table-head" role="row">
+					<th
+						className="edit-site-list-table-column"
+						role="columnheader"
+					>
+						{ __( 'Template' ) }
+					</th>
+					<th
+						className="edit-site-list-table-column"
+						role="columnheader"
+					>
+						{ __( 'Added by' ) }
+					</th>
+					<th
+						className="edit-site-list-table-column"
+						role="columnheader"
+					>
+						<VisuallyHidden>{ __( 'Actions' ) }</VisuallyHidden>
+					</th>
+				</tr>
+			</thead>
 
-			{ templates.map( ( template ) => (
-				<li key={ template.id }>
-					<HStack className="edit-site-list-table-row">
-						<FlexItem className="edit-site-list-table-column">
+			<tbody>
+				{ templates.map( ( template ) => (
+					<tr
+						key={ template.id }
+						className="edit-site-list-table-row"
+						role="row"
+					>
+						<td className="edit-site-list-table-column" role="cell">
 							<a
-								href={ addQueryArgs( '', {
-									page: 'gutenberg-edit-site',
+								href={ addQueryArgs( window.location.href, {
 									postId: template.id,
 									postType: template.type,
 								} ) }
@@ -104,12 +120,12 @@ export default function Table( { templateType } ) {
 								{ template.title.rendered }
 							</a>
 							{ template.description }
-						</FlexItem>
+						</td>
 
-						<FlexItem className="edit-site-list-table-column">
+						<td className="edit-site-list-table-column" role="cell">
 							{ template.theme }
-						</FlexItem>
-						<FlexItem className="edit-site-list-table-column">
+						</td>
+						<td className="edit-site-list-table-column" role="cell">
 							{ isTemplateRemovable( template ) && (
 								<DropdownMenu
 									icon={ moreVertical }
@@ -124,10 +140,10 @@ export default function Table( { templateType } ) {
 									) }
 								</DropdownMenu>
 							) }
-						</FlexItem>
-					</HStack>
-				</li>
-			) ) }
-		</ul>
+						</td>
+					</tr>
+				) ) }
+			</tbody>
+		</table>
 	);
 }
