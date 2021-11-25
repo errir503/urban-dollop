@@ -34,6 +34,7 @@ import {
 	__experimentalToggleGroupControlOption as ToggleGroupControlOption,
 	ToolbarGroup,
 	ToolbarDropdownMenu,
+	Button,
 } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 
@@ -48,7 +49,6 @@ import ResponsiveWrapper from './responsive-wrapper';
 import NavigationInnerBlocks from './inner-blocks';
 import NavigationMenuSelector from './navigation-menu-selector';
 import NavigationMenuNameControl from './navigation-menu-name-control';
-import NavigationMenuPublishButton from './navigation-menu-publish-button';
 import UnsavedInnerBlocks from './unsaved-inner-blocks';
 import NavigationMenuDeleteControl from './navigation-menu-delete-control';
 
@@ -118,13 +118,11 @@ function Navigation( {
 
 	const navigationAreaMenu = areaMenu === 0 ? undefined : areaMenu;
 
-	const navigationMenuId = navigationArea
-		? navigationAreaMenu
-		: attributes.navigationMenuId;
+	const ref = navigationArea ? navigationAreaMenu : attributes.ref;
 
-	const setNavigationMenuId = useCallback(
+	const setRef = useCallback(
 		( postId ) => {
-			setAttributes( { navigationMenuId: postId } );
+			setAttributes( { ref: postId } );
 			if ( navigationArea ) {
 				setAreaMenu( postId );
 			}
@@ -133,7 +131,7 @@ function Navigation( {
 	);
 
 	const [ hasAlreadyRendered, RecursionProvider ] = useNoRecursiveRenders(
-		`navigationMenu/${ navigationMenuId }`
+		`navigationMenu/${ ref }`
 	);
 
 	const { innerBlocks, isInnerBlockSelected } = useSelect(
@@ -160,7 +158,7 @@ function Navigation( {
 		setHasSavedUnsavedInnerBlocks,
 	] = useState( false );
 
-	const isWithinUnassignedArea = navigationArea && ! navigationMenuId;
+	const isWithinUnassignedArea = navigationArea && ! ref;
 
 	const [ isPlaceholderShown, setIsPlaceholderShown ] = useState(
 		! hasExistingNavItems || isWithinUnassignedArea
@@ -177,7 +175,7 @@ function Navigation( {
 		hasResolvedNavigationMenus,
 		navigationMenus,
 		navigationMenu,
-	} = useNavigationMenu( navigationMenuId );
+	} = useNavigationMenu( ref );
 
 	const navRef = useRef();
 	const isDraftNavigationMenu = navigationMenu?.status === 'draft';
@@ -281,6 +279,17 @@ function Navigation( {
 		setIsPlaceholderShown( ! isEntityAvailable );
 	}, [ isEntityAvailable ] );
 
+	const startWithEmptyMenu = useCallback( () => {
+		replaceInnerBlocks( clientId, [] );
+		if ( navigationArea ) {
+			setAreaMenu( 0 );
+		}
+		setAttributes( {
+			ref: undefined,
+		} );
+		setIsPlaceholderShown( true );
+	}, [ clientId ] );
+
 	// If the block has inner blocks, but no menu id, this was an older
 	// navigation block added before the block used a wp_navigation entity.
 	// Either this block was saved in the content or inserted by a pattern.
@@ -300,7 +309,7 @@ function Navigation( {
 				onSave={ ( post ) => {
 					setHasSavedUnsavedInnerBlocks( true );
 					// Switch to using the wp_navigation entity.
-					setNavigationMenuId( post.id );
+					setRef( post.id );
 				} }
 			/>
 		);
@@ -308,13 +317,16 @@ function Navigation( {
 
 	// Show a warning if the selected menu is no longer available.
 	// TODO - the user should be able to select a new one?
-	if ( navigationMenuId && isNavigationMenuMissing ) {
+	if ( ref && isNavigationMenuMissing ) {
 		return (
 			<div { ...blockProps }>
 				<Warning>
 					{ __(
-						'Navigation menu has been deleted or is unavailable'
+						'Navigation menu has been deleted or is unavailable. '
 					) }
+					<Button onClick={ startWithEmptyMenu } variant="link">
+						{ __( 'Create a new menu?' ) }
+					</Button>
 				</Warning>
 			</div>
 		);
@@ -335,11 +347,7 @@ function Navigation( {
 		: Placeholder;
 
 	return (
-		<EntityProvider
-			kind="postType"
-			type="wp_navigation"
-			id={ navigationMenuId }
-		>
+		<EntityProvider kind="postType" type="wp_navigation" id={ ref }>
 			<RecursionProvider>
 				<BlockControls>
 					{ ! isDraftNavigationMenu && isEntityAvailable && (
@@ -352,29 +360,16 @@ function Navigation( {
 								{ ( { onClose } ) => (
 									<NavigationMenuSelector
 										onSelect={ ( { id } ) => {
-											setNavigationMenuId( id );
+											setRef( id );
 											onClose();
 										} }
-										onCreateNew={ () => {
-											if ( navigationArea ) {
-												setAreaMenu( 0 );
-											}
-											setAttributes( {
-												navigationMenuId: undefined,
-											} );
-											setIsPlaceholderShown( true );
-										} }
+										onCreateNew={ startWithEmptyMenu }
 									/>
 								) }
 							</ToolbarDropdownMenu>
 						</ToolbarGroup>
 					) }
 					<ToolbarGroup>{ listViewToolbarButton }</ToolbarGroup>
-					{ isDraftNavigationMenu && (
-						<ToolbarGroup>
-							<NavigationMenuPublishButton />
-						</ToolbarGroup>
-					) }
 				</BlockControls>
 				{ listViewModal }
 				<InspectorControls>
@@ -486,7 +481,7 @@ function Navigation( {
 									setAreaMenu( 0 );
 								}
 								setAttributes( {
-									navigationMenuId: undefined,
+									ref: undefined,
 								} );
 								setIsPlaceholderShown( true );
 							} }
@@ -494,17 +489,20 @@ function Navigation( {
 					</InspectorControls>
 				) }
 				<nav { ...blockProps }>
-					{ ! isEntityAvailable && isPlaceholderShown && (
+					{ isPlaceholderShown && (
 						<PlaceholderComponent
 							onFinish={ ( post ) => {
 								setIsPlaceholderShown( false );
-								setNavigationMenuId( post.id );
+								if ( post ) {
+									setRef( post.id );
+								}
 								selectBlock( clientId );
 							} }
 							canSwitchNavigationMenu={ canSwitchNavigationMenu }
 							hasResolvedNavigationMenus={
 								hasResolvedNavigationMenus
 							}
+							clientId={ clientId }
 						/>
 					) }
 					{ ! isEntityAvailable && ! isPlaceholderShown && (
