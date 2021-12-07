@@ -134,13 +134,19 @@ function Navigation( {
 		`navigationMenu/${ ref }`
 	);
 
-	const { innerBlocks, isInnerBlockSelected } = useSelect(
+	const { innerBlocks, isInnerBlockSelected, hasSubmenus } = useSelect(
 		( select ) => {
 			const { getBlocks, hasSelectedInnerBlock } = select(
 				blockEditorStore
 			);
+			const blocks = getBlocks( clientId );
+			const firstSubmenu = !! blocks.find(
+				( block ) => block.name === 'core/navigation-submenu'
+			);
+
 			return {
-				innerBlocks: getBlocks( clientId ),
+				hasSubmenus: firstSubmenu,
+				innerBlocks: blocks,
 				isInnerBlockSelected: hasSelectedInnerBlock( clientId, true ),
 			};
 		},
@@ -279,14 +285,24 @@ function Navigation( {
 		setIsPlaceholderShown( ! isEntityAvailable );
 	}, [ isEntityAvailable ] );
 
+	// If the ref no longer exists the reset the inner blocks
+	// to provide a clean slate.
+	useEffect( () => {
+		if ( ref === undefined && innerBlocks.length > 0 ) {
+			replaceInnerBlocks( clientId, [] );
+		}
+		// innerBlocks are intentionally not listed as deps. This function is only concerned
+		// with the snapshot from the time when ref became undefined.
+	}, [ clientId, ref, innerBlocks ] );
+
 	const startWithEmptyMenu = useCallback( () => {
-		replaceInnerBlocks( clientId, [] );
 		if ( navigationArea ) {
 			setAreaMenu( 0 );
 		}
 		setAttributes( {
 			ref: undefined,
 		} );
+
 		setIsPlaceholderShown( true );
 	}, [ clientId ] );
 
@@ -401,32 +417,42 @@ function Navigation( {
 									label={ __( 'Always' ) }
 								/>
 							</ToggleGroupControl>
-							<h3>{ __( 'Submenus' ) }</h3>
-							<ToggleControl
-								checked={ openSubmenusOnClick }
-								onChange={ ( value ) => {
-									setAttributes( {
-										openSubmenusOnClick: value,
-									} );
-								} }
-								label={ __( 'Open on click' ) }
-							/>
-							{ ! attributes.openSubmenusOnClick && (
-								<ToggleControl
-									checked={ showSubmenuIcon }
-									onChange={ ( value ) => {
-										setAttributes( {
-											showSubmenuIcon: value,
-										} );
-									} }
-									label={ __( 'Show icons' ) }
-								/>
+							{ hasSubmenus && (
+								<>
+									<h3>{ __( 'Submenus' ) }</h3>
+									<ToggleControl
+										checked={ openSubmenusOnClick }
+										onChange={ ( value ) => {
+											setAttributes( {
+												openSubmenusOnClick: value,
+												...( value && {
+													showSubmenuIcon: true,
+												} ), // Make sure arrows are shown when we toggle this on.
+											} );
+										} }
+										label={ __( 'Open on click' ) }
+									/>
+
+									<ToggleControl
+										checked={ showSubmenuIcon }
+										onChange={ ( value ) => {
+											setAttributes( {
+												showSubmenuIcon: value,
+											} );
+										} }
+										disabled={
+											attributes.openSubmenusOnClick
+										}
+										label={ __( 'Show arrow' ) }
+									/>
+								</>
 							) }
 						</PanelBody>
 					) }
 					{ hasColorSettings && (
 						<PanelColorSettings
 							__experimentalHasMultipleOrigins
+							__experimentalIsRenderedInSidebar
 							title={ __( 'Color' ) }
 							initialOpen={ false }
 							colorSettings={ [
@@ -476,7 +502,6 @@ function Navigation( {
 						<NavigationMenuNameControl />
 						<NavigationMenuDeleteControl
 							onDelete={ () => {
-								replaceInnerBlocks( clientId, [] );
 								if ( navigationArea ) {
 									setAreaMenu( 0 );
 								}
