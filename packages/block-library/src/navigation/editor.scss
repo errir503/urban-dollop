@@ -12,11 +12,10 @@
 		padding-left: 0;
 	}
 
-	// Revert any left/right margins.
+	// Revert any margins.
 	// This also makes it work with classic theme auto margins.
 	.wp-block-navigation-item.wp-block {
-		margin-left: revert;
-		margin-right: revert;
+		margin: revert;
 	}
 }
 
@@ -100,6 +99,7 @@
 .is-editing > .wp-block-navigation__submenu-container > .block-list-appender {
 	display: block;
 	position: static;
+	width: 100%;
 }
 
 // Hide when hovering.
@@ -371,6 +371,7 @@ $color-control-label-height: 20px;
 	font-size: $default-font-size;
 	font-family: $default-font;
 	gap: $grid-unit-15 * 0.5;
+	align-items: center;
 
 	// Margins.
 	.components-dropdown,

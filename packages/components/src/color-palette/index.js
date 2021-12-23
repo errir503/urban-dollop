@@ -10,7 +10,7 @@ import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
-import { __, sprintf } from '@wordpress/i18n';
+import { __, sprintf, isRTL } from '@wordpress/i18n';
 import { useCallback, useMemo } from '@wordpress/element';
 
 /**
@@ -148,12 +148,18 @@ export default function ColorPalette( {
 		/>
 	);
 
+	let dropdownPosition;
+	if ( __experimentalIsRenderedInSidebar ) {
+		dropdownPosition = isRTL() ? 'bottom right' : 'bottom left';
+	}
+
 	const colordColor = colord( value );
 
 	return (
 		<VStack spacing={ 3 } className={ className }>
 			{ ! disableCustomColors && (
 				<CustomColorPickerDropdown
+					position={ dropdownPosition }
 					isRenderedInSidebar={ __experimentalIsRenderedInSidebar }
 					renderContent={ renderCustomColorPicker }
 					renderToggle={ ( { isOpen, onToggle } ) => (
