@@ -12,6 +12,10 @@ global.navigator = global.navigator ?? {};
 // modifying the above `global.navigator`
 require( '../../packages/react-native-editor/src/globals' );
 
+// Set up Reanimated library for testing
+require( 'react-native-reanimated/lib/reanimated2/jestUtils' ).setUpTests();
+global.__reanimatedWorkletInit = jest.fn();
+
 RNNativeModules.UIManager = RNNativeModules.UIManager || {};
 RNNativeModules.UIManager.RCTView = RNNativeModules.UIManager.RCTView || {};
 RNNativeModules.RNGestureHandlerModule = RNNativeModules.RNGestureHandlerModule || {
@@ -81,6 +85,8 @@ jest.mock( '@wordpress/react-native-bridge', () => {
 		subscribeMediaSave: jest.fn(),
 		getOtherMediaOptions: jest.fn(),
 		provideToNative_Html: jest.fn(),
+		requestImageFailedRetryDialog: jest.fn(),
+		requestImageUploadCancelDialog: jest.fn(),
 		requestMediaEditor: jest.fn(),
 		requestMediaPicker: jest.fn(),
 		requestUnsupportedBlockFallback: jest.fn(),
