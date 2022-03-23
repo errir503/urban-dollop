@@ -300,12 +300,6 @@
 		"parent": "themes"
 	},
 	{
-		"title": "Create a block theme",
-		"slug": "create-block-theme",
-		"markdown_source": "../docs/how-to-guides/themes/create-block-theme.md",
-		"parent": "themes"
-	},
-	{
 		"title": "Global Settings & Styles (theme.json)",
 		"slug": "theme-json",
 		"markdown_source": "../docs/how-to-guides/themes/theme-json.md",
@@ -1503,12 +1497,6 @@
 		"title": "@wordpress/e2e-test-utils",
 		"slug": "packages-e2e-test-utils",
 		"markdown_source": "../packages/e2e-test-utils/README.md",
-		"parent": "packages"
-	},
-	{
-		"title": "@wordpress/e2e-tests",
-		"slug": "packages-e2e-tests",
-		"markdown_source": "../packages/e2e-tests/README.md",
 		"parent": "packages"
 	},
 	{
