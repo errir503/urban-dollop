@@ -3,7 +3,6 @@
  */
 import {
 	castArray,
-	flatMap,
 	first,
 	isArray,
 	isBoolean,
@@ -34,6 +33,12 @@ import { Platform } from '@wordpress/element';
 import { applyFilters } from '@wordpress/hooks';
 import { symbol } from '@wordpress/icons';
 import { __ } from '@wordpress/i18n';
+import { create, remove, toHTMLString } from '@wordpress/rich-text';
+
+/**
+ * Internal dependencies
+ */
+import { mapRichTextSettings } from './utils';
 
 /**
  * A block selection object.
@@ -217,26 +222,35 @@ export const __unstableGetClientIdsTree = createSelector(
 );
 
 /**
- * Returns an array containing the clientIds of all descendants
- * of the blocks given.
+ * Returns an array containing the clientIds of all descendants of the blocks
+ * given. Returned ids are ordered first by the order of the ids given, then
+ * by the order that they appear in the editor.
  *
  * @param {Object} state     Global application state.
  * @param {Array}  clientIds Array of blocks to inspect.
  *
  * @return {Array} ids of descendants.
  */
-export const getClientIdsOfDescendants = ( state, clientIds ) =>
-	flatMap( clientIds, ( clientId ) => {
-		const descendants = getBlockOrder( state, clientId );
-		return [
-			...descendants,
-			...getClientIdsOfDescendants( state, descendants ),
-		];
-	} );
+export const getClientIdsOfDescendants = createSelector(
+	( state, clientIds ) => {
+		const collectedIds = [];
+		for ( const givenId of clientIds ) {
+			for ( const descendantId of getBlockOrder( state, givenId ) ) {
+				collectedIds.push(
+					descendantId,
+					...getClientIdsOfDescendants( state, [ descendantId ] )
+				);
+			}
+		}
+		return collectedIds;
+	},
+	( state ) => [ state.blocks.order ]
+);
 
 /**
- * Returns an array containing the clientIds of the top-level blocks
- * and their descendants of any depth (for nested blocks).
+ * Returns an array containing the clientIds of the top-level blocks and
+ * their descendants of any depth (for nested blocks). Ids are returned
+ * in the same order that they appear in the editor.
  *
  * @param {Object} state Global application state.
  *
@@ -244,11 +258,14 @@ export const getClientIdsOfDescendants = ( state, clientIds ) =>
  */
 export const getClientIdsWithDescendants = createSelector(
 	( state ) => {
-		const topLevelIds = getBlockOrder( state );
-		return [
-			...topLevelIds,
-			...getClientIdsOfDescendants( state, topLevelIds ),
-		];
+		const collectedIds = [];
+		for ( const topLevelId of getBlockOrder( state ) ) {
+			collectedIds.push(
+				topLevelId,
+				...getClientIdsOfDescendants( state, [ topLevelId ] )
+			);
+		}
+		return collectedIds;
 	},
 	( state ) => [ state.blocks.order ]
 );
@@ -994,6 +1011,107 @@ export function __unstableIsSelectionMergeable( state, isForward ) {
 }
 
 /**
+ * Get partial selected blocks with their content updated
+ * based on the selection.
+ *
+ * @param {Object} state Editor state.
+ *
+ * @return {Object[]} Updated partial selected blocks.
+ */
+export const __unstableGetSelectedBlocksWithPartialSelection = ( state ) => {
+	const selectionAnchor = getSelectionStart( state );
+	const selectionFocus = getSelectionEnd( state );
+
+	if ( selectionAnchor.clientId === selectionFocus.clientId ) {
+		return EMPTY_ARRAY;
+	}
+
+	// Can't split if the selection is not set.
+	if (
+		! selectionAnchor.attributeKey ||
+		! selectionFocus.attributeKey ||
+		typeof selectionAnchor.offset === 'undefined' ||
+		typeof selectionFocus.offset === 'undefined'
+	) {
+		return EMPTY_ARRAY;
+	}
+
+	const anchorRootClientId = getBlockRootClientId(
+		state,
+		selectionAnchor.clientId
+	);
+	const focusRootClientId = getBlockRootClientId(
+		state,
+		selectionFocus.clientId
+	);
+
+	// It's not splittable if the selection doesn't start and end in the same
+	// block list. Maybe in the future it should be allowed.
+	if ( anchorRootClientId !== focusRootClientId ) {
+		return EMPTY_ARRAY;
+	}
+
+	const blockOrder = getBlockOrder( state, anchorRootClientId );
+	const anchorIndex = blockOrder.indexOf( selectionAnchor.clientId );
+	const focusIndex = blockOrder.indexOf( selectionFocus.clientId );
+
+	// Reassign selection start and end based on order.
+	const [ selectionStart, selectionEnd ] =
+		anchorIndex > focusIndex
+			? [ selectionFocus, selectionAnchor ]
+			: [ selectionAnchor, selectionFocus ];
+
+	const blockA = getBlock( state, selectionStart.clientId );
+	const blockAType = getBlockType( blockA.name );
+
+	const blockB = getBlock( state, selectionEnd.clientId );
+	const blockBType = getBlockType( blockB.name );
+
+	const htmlA = blockA.attributes[ selectionStart.attributeKey ];
+	const htmlB = blockB.attributes[ selectionEnd.attributeKey ];
+
+	const attributeDefinitionA =
+		blockAType.attributes[ selectionStart.attributeKey ];
+	const attributeDefinitionB =
+		blockBType.attributes[ selectionEnd.attributeKey ];
+
+	let valueA = create( {
+		html: htmlA,
+		...mapRichTextSettings( attributeDefinitionA ),
+	} );
+	let valueB = create( {
+		html: htmlB,
+		...mapRichTextSettings( attributeDefinitionB ),
+	} );
+
+	valueA = remove( valueA, 0, selectionStart.offset );
+	valueB = remove( valueB, selectionEnd.offset, valueB.text.length );
+
+	return [
+		{
+			...blockA,
+			attributes: {
+				...blockA.attributes,
+				[ selectionStart.attributeKey ]: toHTMLString( {
+					value: valueA,
+					...mapRichTextSettings( attributeDefinitionA ),
+				} ),
+			},
+		},
+		{
+			...blockB,
+			attributes: {
+				...blockB.attributes,
+				[ selectionEnd.attributeKey ]: toHTMLString( {
+					value: valueB,
+					...mapRichTextSettings( attributeDefinitionB ),
+				} ),
+			},
+		},
+	];
+};
+
+/**
  * Returns an array containing all block client IDs in the editor in the order
  * they appear. Optionally accepts a root client ID of the block list for which
  * the order should be returned, defaulting to the top-level block order.
@@ -1382,10 +1500,28 @@ const canInsertBlockTypeUnmemoized = (
 		parentName
 	);
 
+	let hasBlockAllowedAncestor = true;
+	const blockAllowedAncestorBlocks = blockType.ancestor;
+	if ( blockAllowedAncestorBlocks ) {
+		const ancestors = [
+			rootClientId,
+			...getBlockParents( state, rootClientId ),
+		];
+
+		hasBlockAllowedAncestor = some( ancestors, ( ancestorClientId ) =>
+			checkAllowList(
+				blockAllowedAncestorBlocks,
+				getBlockName( state, ancestorClientId )
+			)
+		);
+	}
+
 	const canInsert =
-		( hasParentAllowedBlock === null && hasBlockAllowedParent === null ) ||
-		hasParentAllowedBlock === true ||
-		hasBlockAllowedParent === true;
+		hasBlockAllowedAncestor &&
+		( ( hasParentAllowedBlock === null &&
+			hasBlockAllowedParent === null ) ||
+			hasParentAllowedBlock === true ||
+			hasBlockAllowedParent === true );
 
 	if ( ! canInsert ) {
 		return canInsert;
@@ -1475,7 +1611,7 @@ export function canRemoveBlock( state, clientId, rootClientId = null ) {
 
 	const { lock } = attributes;
 	const parentIsLocked = !! getTemplateLock( state, rootClientId );
-	// If we don't have a lock on the blockType level, we differ to the parent templateLock.
+	// If we don't have a lock on the blockType level, we defer to the parent templateLock.
 	if ( lock === undefined || lock?.remove === undefined ) {
 		return ! parentIsLocked;
 	}
@@ -1516,7 +1652,7 @@ export function canMoveBlock( state, clientId, rootClientId = null ) {
 
 	const { lock } = attributes;
 	const parentIsLocked = getTemplateLock( state, rootClientId ) === 'all';
-	// If we don't have a lock on the blockType level, we differ to the parent templateLock.
+	// If we don't have a lock on the blockType level, we defer to the parent templateLock.
 	if ( lock === undefined || lock?.move === undefined ) {
 		return ! parentIsLocked;
 	}
@@ -1541,6 +1677,26 @@ export function canMoveBlocks( state, clientIds, rootClientId = null ) {
 }
 
 /**
+ * Determines if the given block is allowed to be edited.
+ *
+ * @param {Object} state    Editor state.
+ * @param {string} clientId The block client Id.
+ *
+ * @return {boolean} Whether the given block is allowed to be edited.
+ */
+export function canEditBlock( state, clientId ) {
+	const attributes = getBlockAttributes( state, clientId );
+	if ( attributes === null ) {
+		return true;
+	}
+
+	const { lock } = attributes;
+
+	// When the edit is true, we cannot edit the block.
+	return ! lock?.edit;
+}
+
+/**
  * Determines if the given block type can be locked/unlocked by a user.
  *
  * @param {Object}          state      Editor state.
@@ -1549,12 +1705,12 @@ export function canMoveBlocks( state, clientIds, rootClientId = null ) {
  * @return {boolean} Whether a given block type can be locked/unlocked.
  */
 export function canLockBlockType( state, nameOrType ) {
-	if ( ! hasBlockSupport( nameOrType, '__experimentalLock', true ) ) {
+	if ( ! hasBlockSupport( nameOrType, 'lock', true ) ) {
 		return false;
 	}
 
 	// Use block editor settings as the default value.
-	return !! state.settings?.__experimentalCanLockBlocks;
+	return !! state.settings?.canLockBlocks;
 }
 
 /**
