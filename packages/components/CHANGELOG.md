@@ -2,6 +2,76 @@
 
 ## Unreleased
 
+### Internal
+
+-   Refactor `FocalPointPicker` to function component ([#39168](https://github.com/WordPress/gutenberg/pull/39168)).
+
+## 20.0.0 (2022-08-24)
+
+### Breaking Changes
+
+-   `CustomSelectControl`: Deprecate constrained width style. Add a `__nextUnconstrainedWidth` prop to start opting into the unconstrained width that will become the default in a future version, currently scheduled to be WordPress 6.4 ([#43230](https://github.com/WordPress/gutenberg/pull/43230)).
+
+### Bug Fix
+
+-   `AlignmentMatrixControl`: Fix the `width` prop so it works as intended ([#43482](https://github.com/WordPress/gutenberg/pull/43482)).
+-   `SelectControl`, `CustomSelectControl`: Truncate long option strings ([#43301](https://github.com/WordPress/gutenberg/pull/43301)).
+-   `Popover`: fix and improve opening animation ([#43186](https://github.com/WordPress/gutenberg/pull/43186)).
+-   `Popover`: fix incorrect deps in hooks resulting in incorrect positioning after calling `update` ([#43267](https://github.com/WordPress/gutenberg/pull/43267/)).
+-   `FontSizePicker`: Fix excessive margin between label and input ([#43304](https://github.com/WordPress/gutenberg/pull/43304)).
+-   Ensure all dependencies allow version ranges ([#43355](https://github.com/WordPress/gutenberg/pull/43355)).
+-   `Popover`: make sure offset middleware always applies the latest frame offset values ([#43329](https://github.com/WordPress/gutenberg/pull/43329/)).
+-   `Dropdown`: anchor popover to the dropdown wrapper (instead of the toggle) ([#43377](https://github.com/WordPress/gutenberg/pull/43377/)).
+-   `Guide`: Fix error when rendering with no pages ([#43380](https://github.com/WordPress/gutenberg/pull/43380/)).
+
+### Enhancements
+
+-   `CustomGradientPicker`, `GradientPicker`: Add `__nextHasNoMargin` prop for opting into the new margin-free styles ([#43387](https://github.com/WordPress/gutenberg/pull/43387)).
+-   `ToolsPanel`: Tighten grid gaps ([#43424](https://github.com/WordPress/gutenberg/pull/43424)).
+-   `ToggleGroupControl`: Improve TypeScript documentation ([#43265](https://github.com/WordPress/gutenberg/pull/43265)).
+-   `ComboboxControl`: Normalize hyphen-like characters to an ASCII hyphen ([#42942](https://github.com/WordPress/gutenberg/pull/42942)).
+-   `FormTokenField`: Refactor away from `_.difference()` ([#43224](https://github.com/WordPress/gutenberg/pull/43224/)).
+-   `Autocomplete`: use `KeyboardEvent.code` instead of `KeyboardEvent.keyCode` ([#43432](https://github.com/WordPress/gutenberg/pull/43432/)).
+-   `ConfirmDialog`: replace (almost) every usage of `fireEvent` with `@testing-library/user-event`  ([#43429](https://github.com/WordPress/gutenberg/pull/43429/)).
+
+### Internal
+
+-   `Tooltip`: Refactor tests to `@testing-library/react` ([#43061](https://github.com/WordPress/gutenberg/pull/43061)).
+-   `ClipboardButton`, `FocusableIframe`, `IsolatedEventContainer`, `withConstrainedTabbing`, `withSpokenMessages`: Improve TypeScript types ([#43579](https://github.com/WordPress/gutenberg/pull/43579)).
+-   Clean up unused and duplicate `COLORS` values ([#43445](https://github.com/WordPress/gutenberg/pull/43445)).
+-   Update `floating-ui` to the latest version ([#43206](https://github.com/WordPress/gutenberg/pull/43206)).
+-   `DateTimePicker`, `TimePicker`, `DatePicker`: Switch from `moment` to `date-fns` ([#43005](https://github.com/WordPress/gutenberg/pull/43005)).
+-   `DatePicker`: Switch from `react-dates` to `use-lilius` ([#43005](https://github.com/WordPress/gutenberg/pull/43005)).
+-   `DateTimePicker`: address feedback after recent refactor to `date-fns` and `use-lilius` ([#43495](https://github.com/WordPress/gutenberg/pull/43495)).
+-   `convertLTRToRTL()`: Refactor away from `_.mapKeys()` ([#43258](https://github.com/WordPress/gutenberg/pull/43258/)).
+-   `withSpokenMessages`: Update to use `@testing-library/react` ([#43273](https://github.com/WordPress/gutenberg/pull/43273)).
+-   `MenuGroup`: Refactor unit tests to use `@testing-library/react` ([#43275](https://github.com/WordPress/gutenberg/pull/43275)).
+-   `FormTokenField`: Refactor away from `_.uniq()` ([#43330](https://github.com/WordPress/gutenberg/pull/43330/)).
+-   `contextConnect`: Refactor away from `_.uniq()` ([#43330](https://github.com/WordPress/gutenberg/pull/43330/)).
+-   `ColorPalette`: Refactor away from `_.uniq()` ([#43330](https://github.com/WordPress/gutenberg/pull/43330/)).
+-   `Guide`: Refactor away from `_.times()` ([#43374](https://github.com/WordPress/gutenberg/pull/43374/)).
+-   `Disabled`: Convert to TypeScript ([#42708](https://github.com/WordPress/gutenberg/pull/42708)).
+-   `Guide`: Update tests to use `@testing-library/react` ([#43380](https://github.com/WordPress/gutenberg/pull/43380)).
+-   `Modal`: use `KeyboardEvent.code` instead of deprecated `KeyboardEvent.keyCode`. improve unit tests ([#43429](https://github.com/WordPress/gutenberg/pull/43429/)).
+-   `FocalPointPicker`: use `KeyboardEvent.code`, partially refactor tests to modern RTL and `user-event` ([#43441](https://github.com/WordPress/gutenberg/pull/43441/)).
+-   `CustomGradientPicker`: use `KeyboardEvent.code` instead of `KeyboardEvent.keyCode` ([#43437](https://github.com/WordPress/gutenberg/pull/43437/)).
+-   `Card`: Convert to TypeScript ([#42941](https://github.com/WordPress/gutenberg/pull/42941)).
+-   `NavigableContainer`: Refactor away from `_.omit()` ([#43474](https://github.com/WordPress/gutenberg/pull/43474/)).
+-   `Notice`: Refactor away from `_.omit()` ([#43474](https://github.com/WordPress/gutenberg/pull/43474/)).
+-   `Snackbar`: Refactor away from `_.omit()` ([#43474](https://github.com/WordPress/gutenberg/pull/43474/)).
+-   `UnitControl`: Refactor away from `_.omit()` ([#43474](https://github.com/WordPress/gutenberg/pull/43474/)).
+-   `BottomSheet`: Refactor away from `_.omit()` ([#43474](https://github.com/WordPress/gutenberg/pull/43474/)).
+-   `DropZone`: Refactor away from `_.includes()` ([#43518](https://github.com/WordPress/gutenberg/pull/43518/)).
+-   `NavigableMenu`: Refactor away from `_.includes()` ([#43518](https://github.com/WordPress/gutenberg/pull/43518/)).
+-   `Tooltip`: Refactor away from `_.includes()` ([#43518](https://github.com/WordPress/gutenberg/pull/43518/)).
+-   `TreeGrid`: Refactor away from `_.includes()` ([#43518](https://github.com/WordPress/gutenberg/pull/43518/)).
+-   `FormTokenField`: use `KeyboardEvent.code`, refactor tests to modern RTL and `user-event` ([#43442](https://github.com/WordPress/gutenberg/pull/43442/)).
+-   `DropdownMenu`: use `KeyboardEvent.code`, refactor tests to model RTL and `user-event` ([#43439](https://github.com/WordPress/gutenberg/pull/43439/)).
+
+### Experimental
+
+-   `FormTokenField`: add `__experimentalAutoSelectFirstMatch` prop to auto select the first matching suggestion on typing ([#42527](https://github.com/WordPress/gutenberg/pull/42527/)).
+
 ## 19.17.0 (2022-08-10)
 
 ### Bug Fix
@@ -19,11 +89,12 @@
 -   `Popover`: anchor correctly to parent node when no explicit anchor is passed ([#42971](https://github.com/WordPress/gutenberg/pull/42971)).
 -   `ColorPalette`: forward correctly `popoverProps` in the `CustomColorPickerDropdown` component [#42989](https://github.com/WordPress/gutenberg/pull/42989)).
 -   `ColorPalette`, `CustomGradientBar`: restore correct color picker popover position [#42989](https://github.com/WordPress/gutenberg/pull/42989)).
+-   `Popover`: fix iframe offset not updating when iframe resizes ([#42971](https://github.com/WordPress/gutenberg/pull/43172)).
 
 ### Enhancements
 
 -   `ToggleGroupControlOptionIcon`: Maintain square proportions ([#43060](https://github.com/WordPress/gutenberg/pull/43060/)).
--   `ToggleGroupControlOptionIcon`: Add a required `label` prop so the button is always accessibly labeled. Also removes `showTooltip` from the accepted prop types, as the tooltip will now always be shown.  ([#43060](https://github.com/WordPress/gutenberg/pull/43060/)).
+-   `ToggleGroupControlOptionIcon`: Add a required `label` prop so the button is always accessibly labeled. Also removes `showTooltip` from the accepted prop types, as the tooltip will now always be shown. ([#43060](https://github.com/WordPress/gutenberg/pull/43060/)).
 -   `SelectControl`, `CustomSelectControl`: Refresh and refactor chevron down icon ([#42962](https://github.com/WordPress/gutenberg/pull/42962)).
 -   `FontSizePicker`: Add large size variant ([#42716](https://github.com/WordPress/gutenberg/pull/42716/)).
 -   `Popover`: tidy up code, add more comments ([#42944](https://github.com/WordPress/gutenberg/pull/42944)).
@@ -34,7 +105,9 @@
 -   `BaseControl`: Add `box-sizing` reset style ([#42889](https://github.com/WordPress/gutenberg/pull/42889)).
 -   `ToggleGroupControl`, `RangeControl`, `FontSizePicker`: Add `__nextHasNoMarginBottom` prop for opting into the new margin-free styles ([#43062](https://github.com/WordPress/gutenberg/pull/43062)).
 -   `BoxControl`: Export `applyValueToSides` util function. ([#42733](https://github.com/WordPress/gutenberg/pull/42733/)).
+-   `ColorPalette`: use index while iterating over color entries to avoid React "duplicated key" warning ([#43096](https://github.com/WordPress/gutenberg/pull/43096)).
 -   `AnglePickerControl`: Add `__nextHasNoMarginBottom` prop for opting into the new margin-free styles ([#43160](https://github.com/WordPress/gutenberg/pull/43160/)).
+-   `ComboboxControl`: Add `__nextHasNoMarginBottom` prop for opting into the new margin-free styles ([#43165](https://github.com/WordPress/gutenberg/pull/43165/)).
 
 ### Internal
 
