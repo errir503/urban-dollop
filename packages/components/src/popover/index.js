@@ -5,7 +5,7 @@
 import classnames from 'classnames';
 import {
 	useFloating,
-	flip,
+	flip as flipMiddleware,
 	shift,
 	autoUpdate,
 	arrow,
@@ -143,9 +143,10 @@ const Popover = (
 		expandOnMobile,
 		onFocusOutside,
 		__unstableSlotName = SLOT_NAME,
-		__unstableObserveElement,
-		__unstableForcePosition = false,
+		flip = true,
+		resize = true,
 		__unstableShift = false,
+		__unstableForcePosition,
 		...contentProps
 	},
 	forwardedRef
@@ -155,6 +156,19 @@ const Popover = (
 			since: '6.1',
 			version: '6.3',
 		} );
+	}
+
+	if ( __unstableForcePosition !== undefined ) {
+		deprecated( '__unstableForcePosition prop in Popover component', {
+			since: '6.1',
+			version: '6.3',
+			alternative: '`flip={ false }` and  `resize={ false }`',
+		} );
+
+		// Back-compat, set the `flip` and `resize` props
+		// to `false` to replicate `__unstableForcePosition`.
+		flip = ! __unstableForcePosition;
+		resize = ! __unstableForcePosition;
 	}
 
 	const arrowRef = useRef( null );
@@ -233,10 +247,9 @@ const Popover = (
 				crossAxis: frameOffsetRef.current[ crossAxis ],
 			};
 		} ),
-		__unstableForcePosition ? undefined : flip(),
-		__unstableForcePosition
-			? undefined
-			: size( {
+		flip ? flipMiddleware() : undefined,
+		resize
+			? size( {
 					apply( sizeProps ) {
 						const { availableHeight } = sizeProps;
 						if ( ! refs.floating.current ) return;
@@ -246,7 +259,8 @@ const Popover = (
 							overflow: 'auto',
 						} );
 					},
-			  } ),
+			  } )
+			: undefined,
 		__unstableShift
 			? shift( {
 					crossAxis: true,
@@ -374,59 +388,42 @@ const Popover = (
 		return autoUpdate(
 			resultingReferenceRef,
 			refs.floating.current,
-			update
+			update,
+			{
+				animationFrame: true,
+			}
 		);
 		// 'reference' and 'refs.floating' are refs and don't need to be listed
 		// as dependencies (see https://github.com/WordPress/gutenberg/pull/41612)
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [ anchorRef, anchorRect, getAnchorRect, update ] );
 
-	// This is only needed for a smooth transition when moving blocks.
-	useLayoutEffect( () => {
-		if ( ! __unstableObserveElement ) {
-			return;
-		}
-		const observer = new window.MutationObserver( update );
-		observer.observe( __unstableObserveElement, { attributes: true } );
-
-		return () => {
-			observer.disconnect();
-		};
-	}, [ __unstableObserveElement, update ] );
-
 	// If the reference element is in a different ownerDocument (e.g. iFrame),
 	// we need to manually update the floating's position as the reference's owner
 	// document scrolls. Also update the frame offset if the view resizes.
 	useLayoutEffect( () => {
-		if ( referenceOwnerDocument === document ) {
+		const referenceAndFloatingHaveSameDocument =
+			referenceOwnerDocument === document;
+		const hasFrameElement =
+			!! referenceOwnerDocument?.defaultView?.frameElement;
+
+		if ( referenceAndFloatingHaveSameDocument || ! hasFrameElement ) {
 			frameOffsetRef.current = undefined;
 			return;
 		}
 
 		const { defaultView } = referenceOwnerDocument;
 
-		referenceOwnerDocument.addEventListener( 'scroll', update );
+		const updateFrameOffset = () => {
+			frameOffsetRef.current = getFrameOffset( referenceOwnerDocument );
+			update();
+		};
+		defaultView.addEventListener( 'resize', updateFrameOffset );
 
-		let updateFrameOffset;
-		const hasFrameElement =
-			!! referenceOwnerDocument?.defaultView?.frameElement;
-		if ( hasFrameElement ) {
-			updateFrameOffset = () => {
-				frameOffsetRef.current = getFrameOffset(
-					referenceOwnerDocument
-				);
-				update();
-			};
-			updateFrameOffset();
-			defaultView.addEventListener( 'resize', updateFrameOffset );
-		}
+		updateFrameOffset();
 
 		return () => {
-			referenceOwnerDocument.removeEventListener( 'scroll', update );
-
-			if ( updateFrameOffset ) {
-				defaultView.removeEventListener( 'resize', updateFrameOffset );
-			}
+			defaultView.removeEventListener( 'resize', updateFrameOffset );
 		};
 	}, [ referenceOwnerDocument, update ] );
 
