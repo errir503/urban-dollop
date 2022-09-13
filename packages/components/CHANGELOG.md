@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 21.0.0 (2022-09-13)
+
 ### Breaking Changes
 
 -   `FontSizePicker`: Deprecate bottom margin style. Add a `__nextHasNoMarginBottom` prop to start opting into the margin-free styles that will become the default in a future version, currently scheduled to be WordPress 6.4 ([#43870](https://github.com/WordPress/gutenberg/pull/43870)).
@@ -28,6 +30,9 @@
 -   `SearchControl`: Add `__nextHasNoMargin` prop for opting into the new margin-free styles ([#43871](https://github.com/WordPress/gutenberg/pull/43871)).
 -   `CardHeader`, `CardBody`, `CardFooter`: Tweak `isShady` background colors to be consistent with the grays in `@wordpress/base-styles` ([#43719](https://github.com/WordPress/gutenberg/pull/43719)).
 -   `InputControl`, `SelectControl`: Tweak `disabled` colors to be consistent with the grays in `@wordpress/base-styles` ([#43719](https://github.com/WordPress/gutenberg/pull/43719)).
+-   `FocalPointPicker`: Tweak media placeholder background color to be consistent with the grays in `@wordpress/base-styles` ([#43994](https://github.com/WordPress/gutenberg/pull/43994)).
+-   `RangeControl`: Tweak rail, track, and mark colors to be consistent with the grays in `@wordpress/base-styles` ([#43994](https://github.com/WordPress/gutenberg/pull/43994)).
+-   `UnitControl`: Tweak unit dropdown hover color to be consistent with the grays in `@wordpress/base-styles` ([#43994](https://github.com/WordPress/gutenberg/pull/43994)).
 -   `Popover`: stabilize `__unstableShift` to `shift` ([#43845](https://github.com/WordPress/gutenberg/pull/43845)).
 
 ### Internal
@@ -37,6 +42,8 @@
 -   `RadioControl`: Clean up styles to use less custom CSS ([#43868](https://github.com/WordPress/gutenberg/pull/43868)).
 -   Remove unused `normalizeArrowKey` utility function ([#43640](https://github.com/WordPress/gutenberg/pull/43640/)).
 -   `SearchControl`: Convert to TypeScript ([#43871](https://github.com/WordPress/gutenberg/pull/43871)).
+-   `FormFileUpload`: Convert to TypeScript ([#43960](https://github.com/WordPress/gutenberg/pull/43960)).
+-   `DropZone`: Convert to TypeScript ([#43962](https://github.com/WordPress/gutenberg/pull/43962)).
 -   `ToggleGroupControl`: Rename `__experimentalIsIconGroup` prop to `__experimentalIsBorderless` ([#43771](https://github.com/WordPress/gutenberg/pull/43771/)).
 -   `NumberControl`: Add TypeScript types ([#43791](https://github.com/WordPress/gutenberg/pull/43791/)).
 -   Refactor `FocalPointPicker` to function component ([#39168](https://github.com/WordPress/gutenberg/pull/39168)).
@@ -57,6 +64,7 @@
 -   `withFilters`: Refactor tests to `@testing-library/react` ([#44017](https://github.com/WordPress/gutenberg/pull/44017)).
 -   `IsolatedEventContainer`: Refactor tests to `@testing-library/react` ([#44073](https://github.com/WordPress/gutenberg/pull/44073)).
 -   `KeyboardShortcuts`: Refactor tests to `@testing-library/react` ([#44075](https://github.com/WordPress/gutenberg/pull/44075)).
+-   `Slot`/`Fill`: Refactor tests to `@testing-library/react` ([#44084](https://github.com/WordPress/gutenberg/pull/44084)).
 
 ## 20.0.0 (2022-08-24)
 
