@@ -6,7 +6,11 @@ import { castArray } from 'lodash';
 /**
  * WordPress dependencies
  */
-import { getBlockType, serialize } from '@wordpress/blocks';
+import {
+	getBlockType,
+	serialize,
+	store as blocksStore,
+} from '@wordpress/blocks';
 import { DropdownMenu, MenuGroup, MenuItem } from '@wordpress/components';
 import { useDispatch, useSelect } from '@wordpress/data';
 import { moreVertical } from '@wordpress/icons';
@@ -59,7 +63,7 @@ export function BlockSettingsDropdown( {
 	const firstBlockClientId = blockClientIds[ 0 ];
 	const {
 		firstParentClientId,
-		hasReducedUI,
+		isDistractionFree,
 		onlyBlock,
 		parentBlockType,
 		previousBlockClientId,
@@ -75,7 +79,10 @@ export function BlockSettingsDropdown( {
 				getNextBlockClientId,
 				getSelectedBlockClientIds,
 				getSettings,
+				getBlockAttributes,
 			} = select( blockEditorStore );
+
+			const { getActiveBlockVariation } = select( blocksStore );
 
 			const parents = getBlockParents( firstBlockClientId );
 			const _firstParentClientId = parents[ parents.length - 1 ];
@@ -83,9 +90,13 @@ export function BlockSettingsDropdown( {
 
 			return {
 				firstParentClientId: _firstParentClientId,
-				hasReducedUI: getSettings().hasReducedUI,
+				isDistractionFree: getSettings().isDistractionFree,
 				onlyBlock: 1 === getBlockCount(),
-				parentBlockType: getBlockType( parentBlockName ),
+				parentBlockType:
+					getActiveBlockVariation(
+						parentBlockName,
+						getBlockAttributes( _firstParentClientId )
+					) || getBlockType( parentBlockName ),
 				previousBlockClientId:
 					getPreviousBlockClientId( firstBlockClientId ),
 				nextBlockClientId: getNextBlockClientId( firstBlockClientId ),
@@ -171,7 +182,7 @@ export function BlockSettingsDropdown( {
 	const { gestures: showParentOutlineGestures } = useShowMoversGestures( {
 		ref: selectParentButtonRef,
 		onChange( isFocused ) {
-			if ( isFocused && hasReducedUI ) {
+			if ( isFocused && isDistractionFree ) {
 				return;
 			}
 			toggleBlockHighlight( firstParentClientId, isFocused );
