@@ -2,68 +2,61 @@
 	"version": 2,
 	"settings": {
 		"appearanceTools": false,
+		"useRootPaddingAwareAlignments": false,
+		"border": {
+			"color": false,
+			"radius": false,
+			"style": false,
+			"width": false
+		},
 		"color": {
 			"background": true,
-			"palette": [
+			"custom": true,
+			"customDuotone": true,
+			"customGradient": true,
+			"defaultDuotone": true,
+			"defaultGradients": true,
+			"defaultPalette": true,
+			"duotone": [
 				{
-					"name": "Black",
-					"slug": "black",
-					"color": "#000000"
+					"name": "Dark grayscale",
+					"colors": [ "#000000", "#7f7f7f" ],
+					"slug": "dark-grayscale"
 				},
 				{
-					"name": "Cyan bluish gray",
-					"slug": "cyan-bluish-gray",
-					"color": "#abb8c3"
+					"name": "Grayscale",
+					"colors": [ "#000000", "#ffffff" ],
+					"slug": "grayscale"
 				},
 				{
-					"name": "White",
-					"slug": "white",
-					"color": "#ffffff"
+					"name": "Purple and yellow",
+					"colors": [ "#8c00b7", "#fcff41" ],
+					"slug": "purple-yellow"
 				},
 				{
-					"name": "Pale pink",
-					"slug": "pale-pink",
-					"color": "#f78da7"
+					"name": "Blue and red",
+					"colors": [ "#000097", "#ff4747" ],
+					"slug": "blue-red"
 				},
 				{
-					"name": "Vivid red",
-					"slug": "vivid-red",
-					"color": "#cf2e2e"
+					"name": "Midnight",
+					"colors": [ "#000000", "#00a5ff" ],
+					"slug": "midnight"
 				},
 				{
-					"name": "Luminous vivid orange",
-					"slug": "luminous-vivid-orange",
-					"color": "#ff6900"
+					"name": "Magenta and yellow",
+					"colors": [ "#c7005a", "#fff278" ],
+					"slug": "magenta-yellow"
 				},
 				{
-					"name": "Luminous vivid amber",
-					"slug": "luminous-vivid-amber",
-					"color": "#fcb900"
+					"name": "Purple and green",
+					"colors": [ "#a60072", "#67ff66" ],
+					"slug": "purple-green"
 				},
 				{
-					"name": "Light green cyan",
-					"slug": "light-green-cyan",
-					"color": "#7bdcb5"
-				},
-				{
-					"name": "Vivid green cyan",
-					"slug": "vivid-green-cyan",
-					"color": "#00d084"
-				},
-				{
-					"name": "Pale cyan blue",
-					"slug": "pale-cyan-blue",
-					"color": "#8ed1fc"
-				},
-				{
-					"name": "Vivid cyan blue",
-					"slug": "vivid-cyan-blue",
-					"color": "#0693e3"
-				},
-				{
-					"name": "Vivid purple",
-					"slug": "vivid-purple",
-					"color": "#9b51e0"
+					"name": "Blue and orange",
+					"colors": [ "#1900d8", "#ffa96b" ],
+					"slug": "blue-orange"
 				}
 			],
 			"gradients": [
@@ -128,75 +121,246 @@
 					"slug": "midnight"
 				}
 			],
-			"duotone": [
+			"link": false,
+			"palette": [
 				{
-					"name":  "Dark grayscale" ,
-					"colors": [ "#000000", "#7f7f7f" ],
-					"slug": "dark-grayscale"
+					"name": "Black",
+					"slug": "black",
+					"color": "#000000"
 				},
 				{
-					"name":  "Grayscale" ,
-					"colors": [ "#000000", "#ffffff" ],
-					"slug": "grayscale"
+					"name": "Cyan bluish gray",
+					"slug": "cyan-bluish-gray",
+					"color": "#abb8c3"
 				},
 				{
-					"name":  "Purple and yellow" ,
-					"colors": [ "#8c00b7", "#fcff41" ],
-					"slug": "purple-yellow"
+					"name": "White",
+					"slug": "white",
+					"color": "#ffffff"
 				},
 				{
-					"name":  "Blue and red" ,
-					"colors": [ "#000097", "#ff4747" ],
-					"slug": "blue-red"
+					"name": "Pale pink",
+					"slug": "pale-pink",
+					"color": "#f78da7"
 				},
 				{
-					"name":  "Midnight" ,
-					"colors": [ "#000000", "#00a5ff" ],
-					"slug": "midnight"
+					"name": "Vivid red",
+					"slug": "vivid-red",
+					"color": "#cf2e2e"
 				},
 				{
-					"name":  "Magenta and yellow" ,
-					"colors": [ "#c7005a", "#fff278" ],
-					"slug": "magenta-yellow"
+					"name": "Luminous vivid orange",
+					"slug": "luminous-vivid-orange",
+					"color": "#ff6900"
 				},
 				{
-					"name":  "Purple and green" ,
-					"colors": [ "#a60072", "#67ff66" ],
-					"slug": "purple-green"
+					"name": "Luminous vivid amber",
+					"slug": "luminous-vivid-amber",
+					"color": "#fcb900"
 				},
 				{
-					"name":  "Blue and orange" ,
-					"colors": [ "#1900d8", "#ffa96b" ],
-					"slug": "blue-orange"
+					"name": "Light green cyan",
+					"slug": "light-green-cyan",
+					"color": "#7bdcb5"
+				},
+				{
+					"name": "Vivid green cyan",
+					"slug": "vivid-green-cyan",
+					"color": "#00d084"
+				},
+				{
+					"name": "Pale cyan blue",
+					"slug": "pale-cyan-blue",
+					"color": "#8ed1fc"
+				},
+				{
+					"name": "Vivid cyan blue",
+					"slug": "vivid-cyan-blue",
+					"color": "#0693e3"
+				},
+				{
+					"name": "Vivid purple",
+					"slug": "vivid-purple",
+					"color": "#9b51e0"
 				}
 			],
-			"custom": true,
-			"customDuotone": true,
-			"customGradient": true,
-			"defaultGradients": true,
-			"defaultPalette": true,
-			"link": false,
 			"text": true
 		},
+		"shadow": {
+			"palette": [
+				{
+					"name": "Natural",
+					"slug": "natural",
+					"shadow": "0 .2rem .3rem 0 rgba(0,0,0, 0.3), 0 .5rem .6rem 0 rgba(0,0,0, 0.4)"
+				},
+				{
+					"name": "Sharp",
+					"slug": "sharp",
+					"shadow": ".5rem .5rem 0 0 rgba(0,0,0, 0.4)"
+				}
+			]
+		},
+		"layout": {
+			"definitions": {
+				"default": {
+					"name": "default",
+					"slug": "flow",
+					"className": "is-layout-flow",
+					"baseStyles": [
+						{
+							"selector": " > .alignleft",
+							"rules": {
+								"float": "left",
+								"margin-inline-start": "0",
+								"margin-inline-end": "2em"
+							}
+						},
+						{
+							"selector": " > .alignright",
+							"rules": {
+								"float": "right",
+								"margin-inline-start": "2em",
+								"margin-inline-end": "0"
+							}
+						},
+						{
+							"selector": " > .aligncenter",
+							"rules": {
+								"margin-left": "auto !important",
+								"margin-right": "auto !important"
+							}
+						}
+					],
+					"spacingStyles": [
+						{
+							"selector": " > *",
+							"rules": {
+								"margin-block-start": "0",
+								"margin-block-end": "0"
+							}
+						},
+						{
+							"selector": " > * + *",
+							"rules": {
+								"margin-block-start": null,
+								"margin-block-end": "0"
+							}
+						}
+					]
+				},
+				"constrained": {
+					"name": "constrained",
+					"slug": "constrained",
+					"className": "is-layout-constrained",
+					"baseStyles": [
+						{
+							"selector": " > .alignleft",
+							"rules": {
+								"float": "left",
+								"margin-inline-start": "0",
+								"margin-inline-end": "2em"
+							}
+						},
+						{
+							"selector": " > .alignright",
+							"rules": {
+								"float": "right",
+								"margin-inline-start": "2em",
+								"margin-inline-end": "0"
+							}
+						},
+						{
+							"selector": " > .aligncenter",
+							"rules": {
+								"margin-left": "auto !important",
+								"margin-right": "auto !important"
+							}
+						},
+						{
+							"selector": " > :where(:not(.alignleft):not(.alignright):not(.alignfull))",
+							"rules": {
+								"max-width": "var(--wp--style--global--content-size)",
+								"margin-left": "auto !important",
+								"margin-right": "auto !important"
+							}
+						},
+						{
+							"selector": " > .alignwide",
+							"rules": {
+								"max-width": "var(--wp--style--global--wide-size)"
+							}
+						}
+					],
+					"spacingStyles": [
+						{
+							"selector": " > *",
+							"rules": {
+								"margin-block-start": "0",
+								"margin-block-end": "0"
+							}
+						},
+						{
+							"selector": " > * + *",
+							"rules": {
+								"margin-block-start": null,
+								"margin-block-end": "0"
+							}
+						}
+					]
+				},
+				"flex": {
+					"name": "flex",
+					"slug": "flex",
+					"className": "is-layout-flex",
+					"displayMode": "flex",
+					"baseStyles": [
+						{
+							"selector": "",
+							"rules": {
+								"flex-wrap": "wrap",
+								"align-items": "center"
+							}
+						},
+						{
+							"selector": " > *",
+							"rules": {
+								"margin": "0"
+							}
+						}
+					],
+					"spacingStyles": [
+						{
+							"selector": "",
+							"rules": {
+								"gap": null
+							}
+						}
+					]
+				}
+			}
+		},
+		"spacing": {
+			"blockGap": null,
+			"margin": false,
+			"padding": false,
+			"customSpacingSize": true,
+			"units": [ "px", "em", "rem", "vh", "vw", "%" ],
+			"spacingScale": {
+				"operator": "*",
+				"increment": 1.5,
+				"steps": 7,
+				"mediumStep": 1.5,
+				"unit": "rem"
+			}
+		},
 		"typography": {
-			"dropCap": true,
 			"customFontSize": true,
-			"fontStyle": true,
-			"fontWeight": true,
-			"lineHeight": false,
-			"textTransform": true,
-			"textDecoration": true,
-			"letterSpacing": true,
+			"dropCap": true,
 			"fontSizes": [
 				{
 					"name": "Small",
 					"slug": "small",
 					"size": "13px"
-				},
-				{
-					"name": "Normal",
-					"slug": "normal",
-					"size": "16px"
 				},
 				{
 					"name": "Medium",
@@ -209,23 +373,17 @@
 					"size": "36px"
 				},
 				{
-					"name": "Huge",
-					"slug": "huge",
+					"name": "Extra Large",
+					"slug": "x-large",
 					"size": "42px"
 				}
-			]
-		},
-		"spacing": {
-			"blockGap": null,
-			"margin": false,
-			"padding": false,
-			"units": [ "px", "em", "rem", "vh", "vw", "%" ]
-		},
-		"border": {
-			"color": false,
-			"radius": false,
-			"style": false,
-			"width": false
+			],
+			"fontStyle": true,
+			"fontWeight": true,
+			"letterSpacing": true,
+			"lineHeight": false,
+			"textDecoration": true,
+			"textTransform": true
 		},
 		"blocks": {
 			"core/button": {
@@ -244,6 +402,39 @@
 		}
 	},
 	"styles": {
-		"spacing": { "blockGap": "24px" }
+		"elements": {
+			"button": {
+				"color": {
+					"text": "#fff",
+					"background": "#32373c"
+				},
+				"spacing": {
+					"padding": "calc(0.667em + 2px) calc(1.333em + 2px)"
+				},
+				"typography": {
+					"fontSize": "inherit",
+					"fontFamily": "inherit",
+					"lineHeight": "inherit",
+					"textDecoration": "none"
+				},
+				"border": {
+					"width": "0"
+				}
+			},
+			"link": {
+				"typography": {
+					"textDecoration": "underline"
+				}
+			}
+		},
+		"spacing": {
+			"blockGap": "24px",
+			"padding": {
+				"top": "0px",
+				"right": "0px",
+				"bottom": "0px",
+				"left": "0px"
+			}
+		}
 	}
 }
