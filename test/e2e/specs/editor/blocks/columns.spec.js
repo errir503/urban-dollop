@@ -26,7 +26,7 @@ test.describe( 'Columns', () => {
 		// block column add
 		await page
 			.locator(
-				'role=treegrid[name="Block navigation structure"i] >> role=gridcell[name="Column link"i]'
+				'role=treegrid[name="Block navigation structure"i] >> role=gridcell[name="Column"i]'
 			)
 			.first()
 			.click();
@@ -68,6 +68,7 @@ test.describe( 'Columns', () => {
 		await editor.selectBlocks(
 			page.locator( 'role=document[name="Block: Columns"i]' )
 		);
+		await editor.openDocumentSettingsSidebar();
 
 		const columnsChangeInput = page.locator(
 			'role=spinbutton[name="Columns"i]'
