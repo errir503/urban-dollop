@@ -600,7 +600,7 @@ Contains the block elements used to render a post, like the title, date, feature
 -	**Name:** core/post-template
 -	**Category:** theme
 -	**Parent:** core/query
--	**Supports:** align (full, wide), anchor, color (background, gradients, link, text), typography (fontSize, lineHeight), ~~html~~, ~~reusable~~
+-	**Supports:** align (full, wide), anchor, color (background, gradients, link, text), spacing (blockGap), typography (fontSize, lineHeight), ~~html~~, ~~reusable~~
 -	**Attributes:** 
 
 ## Post Terms
@@ -622,7 +622,7 @@ Show minutes required to finish reading the post. ([Source](https://github.com/W
 -	**Supports:** color (background, gradients, text), spacing (margin, padding), typography (fontSize, lineHeight), ~~html~~
 -	**Attributes:** textAlign
 
-## Post Title
+## Title
 
 Displays the title of a post, page, or any other content-type. ([Source](https://github.com/WordPress/gutenberg/tree/trunk/packages/block-library/src/post-title))
 
@@ -656,7 +656,7 @@ An advanced block that allows displaying post types based on different query par
 -	**Name:** core/query
 -	**Category:** theme
 -	**Supports:** align (full, wide), anchor, ~~html~~
--	**Attributes:** displayLayout, namespace, query, queryId, tagName
+-	**Attributes:** namespace, query, queryId, tagName
 
 ## No results
 
@@ -676,7 +676,7 @@ Displays a paginated navigation to next/previous set of posts, when applicable. 
 -	**Category:** theme
 -	**Parent:** core/query
 -	**Supports:** align, anchor, color (background, gradients, link, text), typography (fontSize, lineHeight), ~~html~~, ~~reusable~~
--	**Attributes:** paginationArrow
+-	**Attributes:** paginationArrow, showLabel
 
 ## Next Page
 
