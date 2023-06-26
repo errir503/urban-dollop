@@ -8,10 +8,12 @@
 /**
  * Gutenberg_REST_Template_Revision_Count class
  *
+ * Template revision changes are waiting on a core change to be merged.
+ * See: https://github.com/WordPress/gutenberg/pull/45215#issuecomment-1592704026
  * When merging into core, prepare_revision_links() should be merged with
  * WP_REST_Templates_Controller::prepare_links().
  */
-class Gutenberg_REST_Template_Revision_Count extends WP_REST_Templates_Controller {
+class Gutenberg_REST_Template_Revision_Count extends Gutenberg_REST_Templates_Controller_6_3 {
 	/**
 	 * Add revisions to the response.
 	 *
@@ -43,8 +45,6 @@ class Gutenberg_REST_Template_Revision_Count extends WP_REST_Templates_Controlle
 
 	/**
 	 * Adds revisions to links.
-	 *
-	 * @since 6.2.0
 	 *
 	 * @param WP_Block_Template $template  Template instance.
 	 * @return array Links for the given post.

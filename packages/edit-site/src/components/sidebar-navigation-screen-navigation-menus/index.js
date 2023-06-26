@@ -1,8 +1,9 @@
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
-import { useEntityRecords } from '@wordpress/core-data';
+import { __, sprintf } from '@wordpress/i18n';
+import { useEntityRecords, store as coreStore } from '@wordpress/core-data';
+import { useSelect } from '@wordpress/data';
 
 import { decodeEntities } from '@wordpress/html-entities';
 import {
@@ -21,15 +22,54 @@ import { useLink } from '../routes/link';
 import SingleNavigationMenu from '../sidebar-navigation-screen-navigation-menu/single-navigation-menu';
 import useNavigationMenuHandlers from '../sidebar-navigation-screen-navigation-menu/use-navigation-menu-handlers';
 
+// Copied from packages/block-library/src/navigation/edit/navigation-menu-selector.js.
+function buildMenuLabel( title, id, status ) {
+	if ( ! title?.rendered ) {
+		/* translators: %s is the index of the menu in the list of menus. */
+		return sprintf( __( '(no title %s)' ), id );
+	}
+
+	if ( status === 'publish' ) {
+		return decodeEntities( title?.rendered );
+	}
+
+	return sprintf(
+		// translators: %1s: title of the menu; %2s: status of the menu (draft, pending, etc.).
+		__( '%1$s (%2$s)' ),
+		decodeEntities( title?.rendered ),
+		status
+	);
+}
+
 export default function SidebarNavigationScreenNavigationMenus() {
-	const { records: navigationMenus, isResolving: isLoading } =
-		useEntityRecords(
-			'postType',
-			`wp_navigation`,
-			PRELOADED_NAVIGATION_MENUS_QUERY
-		);
+	const {
+		records: navigationMenus,
+		isResolving: isResolvingNavigationMenus,
+		hasResolved: hasResolvedNavigationMenus,
+	} = useEntityRecords(
+		'postType',
+		`wp_navigation`,
+		PRELOADED_NAVIGATION_MENUS_QUERY
+	);
+
+	const isLoading =
+		isResolvingNavigationMenus && ! hasResolvedNavigationMenus;
+
+	const getNavigationFallbackId = useSelect(
+		( select ) => select( coreStore ).getNavigationFallbackId
+	);
 
 	const firstNavigationMenu = navigationMenus?.[ 0 ];
+
+	// If there is no navigation menu found
+	// then trigger fallback algorithm to create one.
+	if (
+		! firstNavigationMenu &&
+		! isResolvingNavigationMenus &&
+		hasResolvedNavigationMenus
+	) {
+		getNavigationFallbackId();
+	}
 
 	const { handleSave, handleDelete, handleDuplicate } =
 		useNavigationMenuHandlers();
@@ -59,7 +99,9 @@ export default function SidebarNavigationScreenNavigationMenus() {
 				navigationMenu={ firstNavigationMenu }
 				handleDelete={ () => handleDelete( firstNavigationMenu ) }
 				handleDuplicate={ () => handleDuplicate( firstNavigationMenu ) }
-				handleSave={ () => handleSave( firstNavigationMenu ) }
+				handleSave={ ( edits ) =>
+					handleSave( firstNavigationMenu, edits )
+				}
 			/>
 		);
 	}
@@ -67,16 +109,14 @@ export default function SidebarNavigationScreenNavigationMenus() {
 	return (
 		<SidebarNavigationScreenWrapper>
 			<ItemGroup>
-				{ navigationMenus?.map( ( navMenu ) => (
+				{ navigationMenus?.map( ( { id, title, status }, index ) => (
 					<NavMenuItem
-						postId={ navMenu.id }
-						key={ navMenu.id }
+						postId={ id }
+						key={ id }
 						withChevron
 						icon={ navigation }
 					>
-						{ decodeEntities(
-							navMenu.title?.rendered || navMenu.slug
-						) }
+						{ buildMenuLabel( title, index + 1, status ) }
 					</NavMenuItem>
 				) ) }
 			</ItemGroup>
