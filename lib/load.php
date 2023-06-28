@@ -83,9 +83,6 @@ require __DIR__ . '/compat/wordpress-6.2/theme.php';
 require __DIR__ . '/compat/wordpress-6.2/widgets.php';
 require __DIR__ . '/compat/wordpress-6.2/menu.php';
 
-// WordPress 6.3 compat.
-require __DIR__ . '/compat/wordpress-6.3/get-global-styles-and-settings.php';
-
 if ( ! class_exists( 'WP_HTML_Tag_Processor' ) ) {
 	require __DIR__ . '/compat/wordpress-6.2/html-api/class-wp-html-attribute-token.php';
 	require __DIR__ . '/compat/wordpress-6.2/html-api/class-wp-html-span.php';
@@ -94,6 +91,8 @@ if ( ! class_exists( 'WP_HTML_Tag_Processor' ) ) {
 }
 
 // WordPress 6.3 compat.
+require __DIR__ . '/compat/wordpress-6.3/get-global-styles-and-settings.php';
+require __DIR__ . '/compat/wordpress-6.3/block-template-utils.php';
 require __DIR__ . '/compat/wordpress-6.3/html-api/class-gutenberg-html-tag-processor-6-3.php';
 require __DIR__ . '/compat/wordpress-6.3/script-loader.php';
 require __DIR__ . '/compat/wordpress-6.3/blocks.php';
@@ -108,11 +107,20 @@ require __DIR__ . '/experimental/blocks.php';
 require __DIR__ . '/experimental/navigation-theme-opt-in.php';
 require __DIR__ . '/experimental/kses.php';
 require __DIR__ . '/experimental/l10n.php';
-
-require __DIR__ . '/experimental/interactivity-api/script-loader.php';
 if ( gutenberg_is_experiment_enabled( 'gutenberg-interactivity-api-core-blocks' ) ) {
 	require __DIR__ . '/experimental/interactivity-api/blocks.php';
 }
+require __DIR__ . '/experimental/interactivity-api/class-wp-interactivity-store.php';
+require __DIR__ . '/experimental/interactivity-api/store.php';
+require __DIR__ . '/experimental/interactivity-api/scripts.php';
+require __DIR__ . '/experimental/interactivity-api/class-wp-directive-processor.php';
+require __DIR__ . '/experimental/interactivity-api/class-wp-directive-context.php';
+require __DIR__ . '/experimental/interactivity-api/directive-processing.php';
+require __DIR__ . '/experimental/interactivity-api/directives/wp-bind.php';
+require __DIR__ . '/experimental/interactivity-api/directives/wp-context.php';
+require __DIR__ . '/experimental/interactivity-api/directives/wp-class.php';
+require __DIR__ . '/experimental/interactivity-api/directives/wp-style.php';
+require __DIR__ . '/experimental/interactivity-api/directives/wp-text.php';
 
 
 // Fonts API.
