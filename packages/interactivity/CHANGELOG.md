@@ -5,10 +5,13 @@
 ### Bug Fix
 
 -   Add support for underscores and leading dashes in the suffix part of the directive. ([#53337](https://github.com/WordPress/gutenberg/pull/53337))
+-   Add an asynchronous short circuit to `useSignalEffect` to avoid infinite loops. ([#53358](https://github.com/WordPress/gutenberg/pull/53358))
 
 ### Enhancements
 
 -   Add JSDoc comments to `store()` and `directive()` functions. ([#52469](https://github.com/WordPress/gutenberg/pull/52469))
+
+## 2.0.0 (2023-08-10)
 
 ### Breaking Change
 
