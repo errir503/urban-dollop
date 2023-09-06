@@ -28,7 +28,7 @@ What follows is a set of questions that have come up from the last few years of 
 
 ### The Development Experience
 - [How do I make my own block?](#how-do-i-make-my-own-block)
-- [Does Gutenberg involve editing posts/pages in the front-end?](#does-gutenberg-involve-editing-postspages-in-the-front-end)
+- [Does Gutenberg involve editing posts/pages in the front-end?](#does-gutenberg-involve-editing-posts-pages-in-the-front-end)
 - [Given Gutenberg is built in JavaScript, how do old meta boxes (PHP) work?](#given-gutenberg-is-built-in-javascript-how-do-old-meta-boxes-php-work)
 - [How can plugins extend the Gutenberg UI?](#how-can-plugins-extend-the-gutenberg-ui)
 - [Are Custom Post Types still supported?](#are-custom-post-types-still-supported)
@@ -151,7 +151,7 @@ This is the canonical list of keyboard shortcuts:
 			<td><kbd>⇧</kbd><kbd>⌘</kbd><kbd>Z</kbd></td>
 		</tr>
 		<tr>
-			<td>Show or hide the settings sidebar.</td>
+			<td>Show or hide the Settings sidebar.</td>
 			<td><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>,</kbd></td>
 			<td><kbd>⇧</kbd><kbd>⌘</kbd><kbd>,</kbd></td>
 		</tr>
@@ -192,7 +192,7 @@ This is the canonical list of keyboard shortcuts:
 		</tr>
 		<tr>
 			<td>Toggle fullscreen mode.</td>
-			<td><kbd>CMD</kbd>+<kbd>Option</kbd>+<kbd>Shift</kbd>+<kbd>F</kbd></td>
+			<td><kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>F</kbd></td>
 			<td><kbd>⇧</kbd><kbd>⌥</kbd><kbd>⌘</kbd><kbd>F</kbd></td>
 		</tr>
 	</tbody>
@@ -218,6 +218,11 @@ This is the canonical list of keyboard shortcuts:
 			<td>Clear selection.</td>
 			<td><kbd>Esc</kbd></td>
 			<td><kbd>Esc</kbd></td>
+		</tr>
+		<tr>
+			<td>Select text across multiple blocks.</td>
+			<td><kbd>Shift</kbd>+<kbd>Arrow (⇦, ⇧, ⇨, ⇩)</kbd></td>
+			<td><kbd>Shift</kbd>+<kbd>Arrow (⇦, ⇧, ⇨, ⇩)</kbd></td>
 		</tr>
 	</tbody>
 </table>
@@ -270,7 +275,7 @@ This is the canonical list of keyboard shortcuts:
 		</tr>
 		<tr>
 			<td>Remove multiple selected blocks.</td>
-			<td></td>
+			<td><kbd>del</kbd><kbd>backspace</kbd></td>
 			<td><kbd>del</kbd><kbd>backspace</kbd></td>
 		</tr>
 	</tbody>
@@ -344,7 +349,7 @@ Yes, you can drag and drop blocks to rearrange their order.
 
 ## How do I make my own block?
 
-The best place to start is the [Create a Block Tutorial](https://developer.wordpress.org/block-editor/tutorials/create-block/).
+The best place to start is the [Create a Block Tutorial](https://developer.wordpress.org/block-editor/getting-started/create-block/).
 
 ## Does Gutenberg involve editing posts/pages in the front-end?
 
@@ -352,16 +357,15 @@ No, we are designing Gutenberg primarily as a replacement for the post and page 
 
 ## Given Gutenberg is built in JavaScript, how do old meta boxes (PHP) work?
 
-See the [Meta Box Tutorial](https://developer.wordpress.org/block-editor/tutorials/metabox/) for more information on using Meta boxes with the new block editor.
+See the [Meta Box Tutorial](https://developer.wordpress.org/block-editor/how-to-guides/metabox/) for more information on using Meta boxes with the new block editor.
 
 ## How can plugins extend the Gutenberg UI?
 
-The main extension point we want to emphasize is creating new blocks. Blocks are added to the block editor using plugins, see the [Create a Block Tutorial](https://developer.wordpress.org/block-editor/tutorials/create-block/) to get started.
+The main extension point we want to emphasize is creating new blocks. Blocks are added to the block editor using plugins, see the [Create a Block Tutorial](https://developer.wordpress.org/block-editor/getting-stared/create-block/) to get started.
 
 ## Are Custom Post Types still supported?
 
 Indeed. There are multiple ways in which custom post types can leverage Gutenberg. The plan is to allow them to specify the blocks they support, as well as defining a default block for the post type. It's not currently the case, but if a post type disables the content field, the “advanced” section at the bottom would fill the page.
-
 
 ## Can themes _style_ blocks?
 
@@ -396,9 +400,11 @@ _See:_ [Editor Styles](/docs/how-to-guides/themes/theme-support.md#editor-styles
 
 ## What browsers does Gutenberg support?
 
-Gutenberg works in modern browsers, and Internet Explorer 11.
+Gutenberg works in modern browsers.
 
-Our [list of supported browsers can be found in the Make WordPress handbook](https://make.wordpress.org/core/handbook/best-practices/browser-support/). By “modern browsers” we generally mean the _current and past two versions_ of each major browser.
+The [list of supported browsers can be found in the Make WordPress handbook](https://make.wordpress.org/core/handbook/best-practices/browser-support/). The term “modern browsers” generally refers to the _current and previous two versions_ of each major browser.
+
+Since WordPress 5.8, Gutenberg no longer supports any version of Internet Explorer.
 
 ## Should I be concerned that Gutenberg will make my plugin obsolete?
 
