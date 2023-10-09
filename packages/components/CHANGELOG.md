@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+### Bug Fix
+
+-   `Modal`: fix closing when contained iframe is focused ([#51602](https://github.com/WordPress/gutenberg/pull/51602)).
+
+### Internal
+
+-   `ConfirmDialog`: Migrate to TypeScript. ([#54954](https://github.com/WordPress/gutenberg/pull/54954)).
+
+## 25.9.0 (2023-10-05)
+
 ### Enhancements
 
 -   `SearchControl`: polish metrics for `compact` size variant ([#54663](https://github.com/WordPress/gutenberg/pull/54663)).
@@ -11,6 +21,7 @@
 -   `InputControl`, `NumberControl`, `UnitControl`, `SelectControl`, `CustomSelectControl`, `TreeSelect`: Add opt-in prop for next 40px default size, superseding the `__next36pxDefaultSize` prop ([#53819](https://github.com/WordPress/gutenberg/pull/53819)).
 -   `Modal`: add a new `size` prop to support preset widths, including a `fill` option to eventually replace the `isFullScreen` prop ([#54471](https://github.com/WordPress/gutenberg/pull/54471)).
 -   Wrapped `TextareaControl` in a `forwardRef` call ([#54975](https://github.com/WordPress/gutenberg/pull/54975)).
+-   `Composite`/`AlignmentMatrixControl`/`CircularOptionPicker`: Starts the `Composite` migration from `reakit` to `ariakit` ([#54225](https://github.com/WordPress/gutenberg/pull/54225)).
 
 ### Bug Fix
 
@@ -21,6 +32,7 @@
 -   `Button`: Remove `aria-selected` CSS selector from styling 'active' buttons ([#54931](https://github.com/WordPress/gutenberg/pull/54931)).
 -   `Popover`: Apply the CSS in JS styles properly for components used within popovers. ([#54912](https://github.com/WordPress/gutenberg/pull/54912))
 -   `Button`: Remove hover styles when `aria-disabled` is set to `true` for the secondary variant. ([#54978](https://github.com/WordPress/gutenberg/pull/54978))
+-   `Button`: Revert toggled style selector to use a class instead of attributes ([#55065](https://github.com/WordPress/gutenberg/pull/55065)).
 
 ### Internal
 
@@ -32,6 +44,11 @@
 -   `SlotFill`: Migrate to TypeScript and Convert to Functional Component `<Slot bubblesVirtually />`. ([#51350](https://github.com/WordPress/gutenberg/pull/51350)).
 -   `Components`: move `ui/utils` to `utils` and remove `ui/` folder ([#54922](https://github.com/WordPress/gutenberg/pull/54922)).
 -   Ensure `@types/` dependencies used by final type files are included in the main dependency field ([#50231](https://github.com/WordPress/gutenberg/pull/50231)).
+-   `Text`: Migrate to TypeScript. ([#54953](https://github.com/WordPress/gutenberg/pull/54953)).
+
+### Experimental
+
+- Introduce `Tabs`, an experimental v2 of `TabPanel`: ([#53960](https://github.com/WordPress/gutenberg/pull/53960)).
 
 ## 25.8.0 (2023-09-20)
 
