@@ -1,25 +1,24 @@
 /**
  * WordPress dependencies
  */
-import apiFetch from '@wordpress/api-fetch';
-import { addQueryArgs } from '@wordpress/url';
 import {
-	VisuallyHidden,
 	__experimentalHeading as Heading,
 	__experimentalVStack as VStack,
 } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import { useEntityRecords } from '@wordpress/core-data';
 import { decodeEntities } from '@wordpress/html-entities';
-import { useState, useEffect, useMemo } from '@wordpress/element';
+import { useState, useMemo } from '@wordpress/element';
+import { dateI18n, getDate, getSettings } from '@wordpress/date';
 
 /**
  * Internal dependencies
  */
 import Page from '../page';
 import Link from '../routes/link';
-import PageActions from '../page-actions';
 import { DataViews } from '../dataviews';
+import useTrashPostAction from '../actions/trash-post';
+import Media from '../media';
 
 const EMPTY_ARRAY = [];
 const EMPTY_OBJECT = {};
@@ -34,8 +33,10 @@ export default function PagePages() {
 			field: 'date',
 			direction: 'desc',
 		},
+		// All fields are visible by default, so it's
+		// better to keep track of the hidden ones.
+		hiddenFields: [ 'date', 'featured-image' ],
 	} );
-	const [ paginationInfo, setPaginationInfo ] = useState();
 	// Request post statuses to get the proper labels.
 	const { records: statuses } = useEntityRecords( 'root', 'status' );
 	const postStatuses =
@@ -58,36 +59,37 @@ export default function PagePages() {
 		} ),
 		[ view ]
 	);
-	const { records: pages, isResolving: isLoadingPages } = useEntityRecords(
-		'postType',
-		'page',
-		queryArgs
+	const {
+		records: pages,
+		isResolving: isLoadingPages,
+		totalItems,
+		totalPages,
+	} = useEntityRecords( 'postType', 'page', queryArgs );
+
+	const paginationInfo = useMemo(
+		() => ( {
+			totalItems,
+			totalPages,
+		} ),
+		[ totalItems, totalPages ]
 	);
-	useEffect( () => {
-		// Make extra request to handle controlled pagination.
-		apiFetch( {
-			path: addQueryArgs( '/wp/v2/pages', {
-				...queryArgs,
-				_fields: 'id',
-			} ),
-			method: 'HEAD',
-			parse: false,
-		} ).then( ( res ) => {
-			// TODO: store this in core-data reducer and
-			// make sure it's returned as part of useEntityRecords
-			// (to avoid double requests).
-			const totalPages = parseInt( res.headers.get( 'X-WP-TotalPages' ) );
-			const totalItems = parseInt( res.headers.get( 'X-WP-Total' ) );
-			setPaginationInfo( {
-				totalPages,
-				totalItems,
-			} );
-		} );
-		// Status should not make extra request if already did..
-	}, [ queryArgs ] );
 
 	const fields = useMemo(
 		() => [
+			{
+				id: 'featured-image',
+				header: __( 'Featured Image' ),
+				accessorFn: ( page ) => page.featured_media,
+				cell: ( props ) =>
+					!! props.row.original.featured_media ? (
+						<Media
+							className="edit-site-page-pages__featured-image"
+							id={ props.row.original.featured_media }
+							size="thumbnail"
+						/>
+					) : null,
+				enableSorting: false,
+			},
 			{
 				header: __( 'Title' ),
 				id: 'title',
@@ -104,7 +106,8 @@ export default function PagePages() {
 										canvas: 'edit',
 									} }
 								>
-									{ decodeEntities( props.getValue() ) }
+									{ decodeEntities( props.getValue() ) ||
+										__( '(no title)' ) }
 								</Link>
 							</Heading>
 						</VStack>
@@ -128,37 +131,44 @@ export default function PagePages() {
 				},
 			},
 			{
-				header: 'Status',
+				header: __( 'Status' ),
 				id: 'status',
-				cell: ( props ) =>
-					postStatuses[ props.row.original.status ] ??
-					props.row.original.status,
+				accessorFn: ( page ) =>
+					postStatuses[ page.status ] ?? page.status,
+				enableSorting: false,
 			},
 			{
-				header: <VisuallyHidden>{ __( 'Actions' ) }</VisuallyHidden>,
-				id: 'actions',
+				header: 'Date',
+				id: 'date',
 				cell: ( props ) => {
-					const page = props.row.original;
-					return <PageActions postId={ page.id } />;
+					const formattedDate = dateI18n(
+						getSettings().formats.datetimeAbbreviated,
+						getDate( props.row.original.date )
+					);
+					return <time>{ formattedDate }</time>;
 				},
-				enableHiding: false,
+				enableSorting: false,
 			},
 		],
 		[ postStatuses ]
 	);
+
+	const trashPostAction = useTrashPostAction();
+	const actions = useMemo( () => [ trashPostAction ], [ trashPostAction ] );
 
 	// TODO: we need to handle properly `data={ data || EMPTY_ARRAY }` for when `isLoading`.
 	return (
 		<Page title={ __( 'Pages' ) }>
 			<DataViews
 				paginationInfo={ paginationInfo }
+				fields={ fields }
+				actions={ actions }
 				data={ pages || EMPTY_ARRAY }
 				isLoading={ isLoadingPages }
-				fields={ fields }
 				view={ view }
 				onChangeView={ setView }
 				options={ {
-					pageCount: paginationInfo?.totalPages,
+					pageCount: totalPages,
 				} }
 			/>
 		</Page>
