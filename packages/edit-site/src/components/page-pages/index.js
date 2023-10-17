@@ -39,21 +39,23 @@ export default function PagePages() {
 	} );
 	// Request post statuses to get the proper labels.
 	const { records: statuses } = useEntityRecords( 'root', 'status' );
-	const postStatuses =
-		statuses === null
-			? EMPTY_OBJECT
-			: statuses.reduce( ( acc, status ) => {
-					acc[ status.slug ] = status.name;
-					return acc;
-			  }, EMPTY_OBJECT );
+	const postStatuses = useMemo(
+		() =>
+			statuses === null
+				? EMPTY_OBJECT
+				: Object.fromEntries(
+						statuses.map( ( { slug, name } ) => [ slug, name ] )
+				  ),
+		[ statuses ]
+	);
 
 	const queryArgs = useMemo(
 		() => ( {
 			per_page: view.perPage,
 			page: view.page + 1, // tanstack starts from zero.
 			_embed: 'author',
-			order: view.sort.direction,
-			orderby: view.sort.field,
+			order: view.sort?.direction,
+			orderby: view.sort?.field,
 			search: view.search,
 			status: [ 'publish', 'draft' ],
 		} ),
@@ -167,9 +169,6 @@ export default function PagePages() {
 				isLoading={ isLoadingPages }
 				view={ view }
 				onChangeView={ setView }
-				options={ {
-					pageCount: totalPages,
-				} }
 			/>
 		</Page>
 	);
