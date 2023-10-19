@@ -70,14 +70,19 @@ if ( class_exists( 'WP_REST_Controller' ) ) {
 	require_once __DIR__ . '/experimental/kses-allowed-html.php';
 }
 
+// Experimental signaling server.
+if ( ! class_exists( 'Gutenberg_HTTP_Singling_Server' ) ) {
+	require_once __DIR__ . '/experimental/sync/class-gutenberg-http-signaling-server.php';
+}
+
 require __DIR__ . '/experimental/editor-settings.php';
 
 // Gutenberg plugin compat.
 require __DIR__ . '/compat/plugin/edit-site-routes-backwards-compat.php';
 require __DIR__ . '/compat/plugin/footnotes.php';
 
+require __DIR__ . '/compat/wordpress-6.4/html-api/class-gutenberg-html-tag-processor-6-4.php';
 if ( ! class_exists( 'WP_HTML_Processor' ) ) {
-	require __DIR__ . '/compat/wordpress-6.4/html-api/class-gutenberg-html-tag-processor-6-4.php';
 	require __DIR__ . '/compat/wordpress-6.4/html-api/class-wp-html-active-formatting-elements.php';
 	require __DIR__ . '/compat/wordpress-6.4/html-api/class-wp-html-open-elements.php';
 	require __DIR__ . '/compat/wordpress-6.4/html-api/class-wp-html-processor-state.php';
