@@ -8,13 +8,9 @@ import {
 import { __ } from '@wordpress/i18n';
 import { useEntityRecords } from '@wordpress/core-data';
 import { decodeEntities } from '@wordpress/html-entities';
-import {
-	useContext,
-	useMemo,
-	useCallback,
-	useEffect,
-} from '@wordpress/element';
+import { useState, useMemo, useCallback, useEffect } from '@wordpress/element';
 import { dateI18n, getDate, getSettings } from '@wordpress/date';
+import { privateApis as routerPrivateApis } from '@wordpress/router';
 
 /**
  * Internal dependencies
@@ -22,6 +18,7 @@ import { dateI18n, getDate, getSettings } from '@wordpress/date';
 import Page from '../page';
 import Link from '../routes/link';
 import { DataViews } from '../dataviews';
+import { DEFAULT_STATUSES, default as DEFAULT_VIEWS } from './default-views';
 import {
 	useTrashPostAction,
 	postRevisionsAction,
@@ -29,8 +26,8 @@ import {
 	useEditPostAction,
 } from '../actions';
 import Media from '../media';
-import DataviewsContext from '../dataviews/context';
-import { DEFAULT_STATUSES } from '../dataviews/provider';
+import { unlock } from '../../lock-unlock';
+const { useLocation } = unlock( routerPrivateApis );
 
 const EMPTY_ARRAY = [];
 const defaultConfigPerViewType = {
@@ -41,7 +38,18 @@ const defaultConfigPerViewType = {
 };
 
 export default function PagePages() {
-	const { view, setView } = useContext( DataviewsContext );
+	const {
+		params: { path, activeView = 'all' },
+	} = useLocation();
+	const initialView = DEFAULT_VIEWS.find(
+		( { slug } ) => slug === activeView
+	).view;
+	const [ view, setView ] = useState( initialView );
+	useEffect( () => {
+		setView(
+			DEFAULT_VIEWS.find( ( { slug } ) => slug === activeView ).view
+		);
+	}, [ path, activeView ] );
 	// Request post statuses to get the proper labels.
 	const { records: statuses } = useEntityRecords( 'root', 'status' );
 	const defaultStatuses = useMemo( () => {
@@ -68,25 +76,36 @@ export default function PagePages() {
 		if ( DEFAULT_STATUSES !== defaultStatuses ) {
 			setView( {
 				...view,
-				filters: {
-					...view.filters,
-					status: defaultStatuses,
-				},
+				filters: [
+					...view.filters.filter(
+						( f ) => f.field !== 'status' || f.operator !== 'in'
+					),
+					{ field: 'status', operator: 'in', value: defaultStatuses },
+				],
 			} );
 		}
 	}, [ defaultStatuses ] );
 
-	const queryArgs = useMemo(
-		() => ( {
+	const queryArgs = useMemo( () => {
+		const filters = {};
+		view.filters.forEach( ( filter ) => {
+			if ( filter.field === 'status' && filter.operator === 'in' ) {
+				filters.status = filter.value;
+			}
+			if ( filter.field === 'author' && filter.operator === 'in' ) {
+				filters.author = filter.value;
+			}
+		} );
+		return {
 			per_page: view.perPage,
 			page: view.page,
 			_embed: 'author',
 			order: view.sort?.direction,
 			orderby: view.sort?.field,
-			...view.filters,
-		} ),
-		[ view ]
-	);
+			search: view.search,
+			...filters,
+		};
+	}, [ view ] );
 	const {
 		records: pages,
 		isResolving: isLoadingPages,
@@ -179,7 +198,6 @@ export default function PagePages() {
 				filters: [
 					{
 						type: 'enumeration',
-						id: 'status',
 						resetValue: defaultStatuses,
 					},
 				],
@@ -203,12 +221,8 @@ export default function PagePages() {
 				},
 			},
 		],
-		[ statuses, authors ]
+		[ defaultStatuses, statuses, authors ]
 	);
-
-	const filters = useMemo( () => [
-		{ id: 'search', type: 'search', name: __( 'Filter list' ) },
-	] );
 
 	const trashPostAction = useTrashPostAction();
 	const editPostAction = useEditPostAction();
@@ -247,7 +261,6 @@ export default function PagePages() {
 			<DataViews
 				paginationInfo={ paginationInfo }
 				fields={ fields }
-				filters={ filters }
 				actions={ actions }
 				data={ pages || EMPTY_ARRAY }
 				isLoading={ isLoadingPages }
