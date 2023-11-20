@@ -28,7 +28,6 @@ import {
 	Button,
 	Icon,
 	privateApis as componentsPrivateApis,
-	VisuallyHidden,
 } from '@wordpress/components';
 import { useMemo, Children, Fragment } from '@wordpress/element';
 
@@ -53,6 +52,11 @@ const sortingItemsInfo = {
 	desc: { icon: arrowDown, label: __( 'Sort descending' ) },
 };
 const sortIcons = { asc: chevronUp, desc: chevronDown };
+
+// TODO: find a place where these constants can be shared across components.
+const ENUMERATION_TYPE = 'enumeration';
+const OPERATOR_IN = 'in';
+
 function HeaderMenu( { dataView, header } ) {
 	if ( header.isPlaceholder ) {
 		return null;
@@ -69,16 +73,9 @@ function HeaderMenu( { dataView, header } ) {
 	const sortedDirection = header.column.getIsSorted();
 
 	let filter;
-	if (
-		header.column.columnDef.filters?.length > 0 &&
-		header.column.columnDef.filters.some(
-			( f ) =>
-				( 'string' === typeof f && f === 'enumeration' ) ||
-				( 'object' === typeof f && f.type === 'enumeration' )
-		)
-	) {
+	if ( header.column.columnDef.type === ENUMERATION_TYPE ) {
 		filter = {
-			id: header.column.columnDef.id,
+			field: header.column.columnDef.id,
 			elements: [
 				{
 					value: '',
@@ -149,7 +146,7 @@ function HeaderMenu( { dataView, header } ) {
 				{ isFilterable && (
 					<DropdownMenuGroupV2>
 						<DropdownSubMenuV2
-							key={ filter.id }
+							key={ filter.field }
 							trigger={
 								<DropdownSubMenuTriggerV2
 									prefix={ <Icon icon={ funnel } /> }
@@ -169,7 +166,7 @@ function HeaderMenu( { dataView, header } ) {
 									( f ) =>
 										Object.keys( f )[ 0 ].split(
 											':'
-										)[ 0 ] === filter.id
+										)[ 0 ] === filter.field
 								);
 
 								// Set the empty item as active if the filter is not set.
@@ -204,8 +201,9 @@ function HeaderMenu( { dataView, header } ) {
 															)[ 0 ].split( ':' );
 														return (
 															field !==
-																filter.id ||
-															operator !== 'in'
+																filter.field ||
+															operator !==
+																OPERATOR_IN
 														);
 													}
 												);
@@ -218,8 +216,8 @@ function HeaderMenu( { dataView, header } ) {
 												dataView.setColumnFilters( [
 													...otherFilters,
 													{
-														[ filter.id + ':in' ]:
-															element.value,
+														[ filter.field +
+														':in' ]: element.value,
 													},
 												] );
 											}
@@ -269,7 +267,7 @@ function ViewList( {
 		} );
 		if ( actions?.length ) {
 			_columns.push( {
-				header: <VisuallyHidden>{ __( 'Actions' ) }</VisuallyHidden>,
+				header: __( 'Actions' ),
 				id: 'actions',
 				cell: ( props ) => {
 					return (
@@ -320,7 +318,7 @@ function ViewList( {
 	 * @return {Array} The transformed TanStack column filters.
 	 */
 	const toTanStackColumnFilters = ( filters ) =>
-		filters.map( ( filter ) => ( {
+		filters?.map( ( filter ) => ( {
 			[ filter.field + ':' + filter.operator ]: filter.value,
 		} ) );
 
@@ -477,6 +475,7 @@ function ViewList( {
 												header.column.columnDef
 													.maxWidth || undefined,
 										} }
+										data-field-id={ header.id }
 									>
 										<HeaderMenu
 											dataView={ dataView }
