@@ -12,6 +12,7 @@ import {
 	__experimentalText as Text,
 	__experimentalHStack as HStack,
 	__experimentalVStack as VStack,
+	VisuallyHidden,
 } from '@wordpress/components';
 import { __, _x } from '@wordpress/i18n';
 import { useState, useMemo, useCallback } from '@wordpress/element';
@@ -22,6 +23,7 @@ import {
 	BlockPreview,
 	privateApis as blockEditorPrivateApis,
 } from '@wordpress/block-editor';
+import { DataViews } from '@wordpress/dataviews';
 
 /**
  * Internal dependencies
@@ -29,9 +31,14 @@ import {
 import Page from '../page';
 import Link from '../routes/link';
 import { useAddedBy, AvatarImage } from '../list/added-by';
-import { TEMPLATE_POST_TYPE } from '../../utils/constants';
-import { DataViews } from '../dataviews';
-import { ENUMERATION_TYPE, OPERATOR_IN } from '../dataviews/constants';
+import {
+	TEMPLATE_POST_TYPE,
+	ENUMERATION_TYPE,
+	OPERATOR_IN,
+	OPERATOR_NOT_IN,
+	LAYOUT_GRID,
+	LAYOUT_TABLE,
+} from '../../utils/constants';
 import {
 	useResetTemplateAction,
 	deleteTemplateAction,
@@ -40,19 +47,22 @@ import {
 import usePatternSettings from '../page-patterns/use-pattern-settings';
 import { unlock } from '../../lock-unlock';
 
-const { ExperimentalBlockEditorProvider } = unlock( blockEditorPrivateApis );
+const { ExperimentalBlockEditorProvider, useGlobalStyle } = unlock(
+	blockEditorPrivateApis
+);
 
 const EMPTY_ARRAY = [];
 
 const defaultConfigPerViewType = {
-	list: {},
-	grid: {
+	[ LAYOUT_TABLE ]: {},
+	[ LAYOUT_GRID ]: {
 		mediaField: 'preview',
+		primaryField: 'title',
 	},
 };
 
 const DEFAULT_VIEW = {
-	type: 'list',
+	type: LAYOUT_TABLE,
 	search: '',
 	page: 1,
 	perPage: 20,
@@ -114,6 +124,7 @@ function AuthorField( { item } ) {
 
 function TemplatePreview( { content, viewType } ) {
 	const settings = usePatternSettings();
+	const [ backgroundColor = 'white' ] = useGlobalStyle( 'color.background' );
 	const blocks = useMemo( () => {
 		return parse( content );
 	}, [ content ] );
@@ -131,6 +142,7 @@ function TemplatePreview( { content, viewType } ) {
 		<ExperimentalBlockEditorProvider settings={ settings }>
 			<div
 				className={ `page-templates-preview-field is-viewtype-${ viewType }` }
+				style={ { backgroundColor } }
 			>
 				<BlockPreview blocks={ blocks } />
 			</div>
@@ -189,12 +201,17 @@ export default function DataviewsTemplates() {
 				id: 'description',
 				getValue: ( { item } ) => item.description,
 				render: ( { item } ) => {
-					return (
-						item.description && (
-							<Text variant="muted">
-								{ decodeEntities( item.description ) }
+					return item.description ? (
+						decodeEntities( item.description )
+					) : (
+						<>
+							<Text variant="muted" aria-hidden="true">
+								&#8212;
 							</Text>
-						)
+							<VisuallyHidden>
+								{ __( 'No description.' ) }
+							</VisuallyHidden>
+						</>
 					);
 				},
 				maxWidth: 200,
@@ -249,6 +266,14 @@ export default function DataviewsTemplates() {
 				) {
 					filteredTemplates = filteredTemplates.filter( ( item ) => {
 						return item.author_text === filter.value;
+					} );
+				} else if (
+					filter.field === 'author' &&
+					filter.operator === OPERATOR_NOT_IN &&
+					!! filter.value
+				) {
+					filteredTemplates = filteredTemplates.filter( ( item ) => {
+						return item.author_text !== filter.value;
 					} );
 				}
 			} );
@@ -327,7 +352,7 @@ export default function DataviewsTemplates() {
 				isLoading={ isLoadingData }
 				view={ view }
 				onChangeView={ onChangeView }
-				supportedLayouts={ [ 'list', 'grid' ] }
+				supportedLayouts={ [ LAYOUT_TABLE, LAYOUT_GRID ] }
 			/>
 		</Page>
 	);
