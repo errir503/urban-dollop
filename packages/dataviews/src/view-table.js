@@ -122,6 +122,7 @@ function HeaderMenu( { dataView, header } ) {
 					iconPosition="right"
 					text={ text }
 					style={ { padding: 0 } }
+					size="compact"
 				/>
 			}
 		>
@@ -340,12 +341,12 @@ function ViewTable( {
 	getItemId,
 	isLoading = false,
 	paginationInfo,
+	deferredRendering,
 } ) {
 	const columns = useMemo( () => {
 		const _columns = fields.map( ( field ) => {
 			const { render, getValue, ...column } = field;
-			column.cell = ( props ) =>
-				render( { item: props.row.original, view } );
+			column.cell = ( props ) => render( { item: props.row.original } );
 			if ( getValue ) {
 				column.accessorFn = ( item ) => getValue( { item } );
 			}
@@ -368,7 +369,7 @@ function ViewTable( {
 		}
 
 		return _columns;
-	}, [ fields, actions, view ] );
+	}, [ fields, actions ] );
 
 	const columnVisibility = useMemo( () => {
 		if ( ! view.hiddenFields?.length ) {
@@ -436,8 +437,9 @@ function ViewTable( {
 		} );
 
 	const shownData = useAsyncList( data );
+	const usedData = deferredRendering ? shownData : data;
 	const dataView = useReactTable( {
-		data: shownData,
+		data: usedData,
 		columns,
 		manualSorting: true,
 		manualFiltering: true,
@@ -542,8 +544,15 @@ function ViewTable( {
 	const hasRows = !! rows?.length;
 	if ( isLoading ) {
 		// TODO:Add spinner or progress bar..
-		return <h3>{ __( 'Loading' ) }</h3>;
+		return (
+			<div className="dataviews-loading">
+				<h3>{ __( 'Loading' ) }</h3>
+			</div>
+		);
 	}
+
+	const sortValues = { asc: 'ascending', desc: 'descending' };
+
 	return (
 		<div className="dataviews-table-view-wrapper">
 			{ hasRows && (
@@ -567,6 +576,11 @@ function ViewTable( {
 													.maxWidth || undefined,
 										} }
 										data-field-id={ header.id }
+										aria-sort={
+											sortValues[
+												header.column.getIsSorted()
+											]
+										}
 									>
 										<HeaderMenu
 											dataView={ dataView }
@@ -606,7 +620,11 @@ function ViewTable( {
 					</tbody>
 				</table>
 			) }
-			{ ! hasRows && <p>{ __( 'no results' ) }</p> }
+			{ ! hasRows && (
+				<div className="dataviews-no-results">
+					<p>{ __( 'No results' ) }</p>
+				</div>
+			) }
 		</div>
 	);
 }
