@@ -15,6 +15,7 @@ import {
 	ButtonGroup,
 	ToggleControl,
 	PanelBody,
+	privateApis as componentsPrivateApis,
 } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 
@@ -27,8 +28,8 @@ import { useSettings } from '../components/use-settings';
 import { getLayoutType, getLayoutTypes } from '../layouts';
 import { useBlockEditingMode } from '../components/block-editing-mode';
 import { LAYOUT_DEFINITIONS } from '../layouts/definitions';
-import { kebabCase } from '../utils/object';
 import { useBlockSettings, useStyleOverride } from './utils';
+import { unlock } from '../lock-unlock';
 
 const layoutBlockSupportKey = 'layout';
 
@@ -48,6 +49,7 @@ function hasLayoutBlockSupport( blockName ) {
  * @return { Array } Array of CSS classname strings.
  */
 export function useLayoutClasses( blockAttributes = {}, blockName = '' ) {
+	const { kebabCase } = unlock( componentsPrivateApis );
 	const rootPaddingAlignment = useSelect( ( select ) => {
 		const { getSettings } = select( blockEditorStore );
 		return getSettings().__experimentalFeatures
@@ -348,6 +350,7 @@ function BlockWithLayoutStyles( { block: BlockListBlock, props } ) {
 			: layout || defaultBlockLayout || {};
 	const layoutClasses = useLayoutClasses( attributes, name );
 
+	const { kebabCase } = unlock( componentsPrivateApis );
 	const selectorPrefix = `wp-container-${ kebabCase( name ) }-layout-`;
 	// Higher specificity to override defaults from theme.json.
 	const selector = `.${ selectorPrefix }${ id }.${ selectorPrefix }${ id }`;
@@ -417,63 +420,6 @@ export const withLayoutStyles = createHigherOrderComponent(
 	'withLayoutStyles'
 );
 
-function BlockWithChildLayoutStyles( { block: BlockListBlock, props } ) {
-	const layout = props.attributes.style?.layout ?? {};
-	const { selfStretch, flexSize } = layout;
-
-	const id = useInstanceId( BlockListBlock );
-	const selector = `.wp-container-content-${ id }`;
-
-	let css = '';
-	if ( selfStretch === 'fixed' && flexSize ) {
-		css = `${ selector } {
-				flex-basis: ${ flexSize };
-				box-sizing: border-box;
-			}`;
-	} else if ( selfStretch === 'fill' ) {
-		css = `${ selector } {
-				flex-grow: 1;
-			}`;
-	}
-
-	// Attach a `wp-container-content` id-based classname.
-	const className = classnames( props.className, {
-		[ `wp-container-content-${ id }` ]: !! css, // Only attach a container class if there is generated CSS to be attached.
-	} );
-
-	useStyleOverride( { css } );
-
-	return <BlockListBlock { ...props } className={ className } />;
-}
-
-/**
- * Override the default block element to add the child layout styles.
- *
- * @param {Function} BlockListBlock Original component.
- *
- * @return {Function} Wrapped component.
- */
-export const withChildLayoutStyles = createHigherOrderComponent(
-	( BlockListBlock ) => ( props ) => {
-		const shouldRenderChildLayoutStyles = useSelect( ( select ) => {
-			return ! select( blockEditorStore ).getSettings()
-				.disableLayoutStyles;
-		} );
-
-		if ( ! shouldRenderChildLayoutStyles ) {
-			return <BlockListBlock { ...props } />;
-		}
-
-		return (
-			<BlockWithChildLayoutStyles
-				block={ BlockListBlock }
-				props={ props }
-			/>
-		);
-	},
-	'withChildLayoutStyles'
-);
-
 addFilter(
 	'blocks.registerBlockType',
 	'core/layout/addAttribute',
@@ -483,9 +429,4 @@ addFilter(
 	'editor.BlockListBlock',
 	'core/editor/layout/with-layout-styles',
 	withLayoutStyles
-);
-addFilter(
-	'editor.BlockListBlock',
-	'core/editor/layout/with-child-layout-styles',
-	withChildLayoutStyles
 );
