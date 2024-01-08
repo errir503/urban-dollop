@@ -10,6 +10,7 @@ import {
 } from '@wordpress/core-data';
 import { __ } from '@wordpress/i18n';
 import { store as preferencesStore } from '@wordpress/preferences';
+import { useViewportMatch } from '@wordpress/compose';
 
 /**
  * Internal dependencies
@@ -46,13 +47,11 @@ const BLOCK_EDITOR_SETTINGS = [
 	'enableCustomSpacing',
 	'enableCustomUnits',
 	'enableOpenverseMediaCategory',
-	'distractionFree',
 	'fontSizes',
 	'gradients',
 	'generateAnchors',
-	'hasFixedToolbar',
+	'getPostLinkProps',
 	'hasInlineToolbar',
-	'isDistractionFree',
 	'imageDefaultSize',
 	'imageDimensions',
 	'imageEditing',
@@ -74,7 +73,6 @@ const BLOCK_EDITOR_SETTINGS = [
 	'__unstableIsBlockBasedTheme',
 	'__experimentalArchiveTitleTypeLabel',
 	'__experimentalArchiveTitleNameLabel',
-	'__experimentalGetPostLinkProps',
 ];
 
 /**
@@ -87,9 +85,12 @@ const BLOCK_EDITOR_SETTINGS = [
  * @return {Object} Block Editor Settings.
  */
 function useBlockEditorSettings( settings, postType, postId ) {
+	const isLargeViewport = useViewportMatch( 'medium' );
 	const {
 		allowRightClickOverrides,
 		focusMode,
+		hasFixedToolbar,
+		isDistractionFree,
 		keepCaretInsideBlock,
 		reusableBlocks,
 		hasUploadPermissions,
@@ -100,7 +101,6 @@ function useBlockEditorSettings( settings, postType, postId ) {
 		userPatternCategories,
 		restBlockPatterns,
 		restBlockPatternCategories,
-		getPostLinkProps,
 	} = useSelect(
 		( select ) => {
 			const isWeb = Platform.OS === 'web';
@@ -113,8 +113,6 @@ function useBlockEditorSettings( settings, postType, postId ) {
 				getBlockPatterns,
 				getBlockPatternCategories,
 			} = select( coreStore );
-			const { getPostLinkProps: postLinkProps } =
-				select( editorStore ).getEditorSettings();
 			const { get } = select( preferencesStore );
 
 			const siteSettings = canUser( 'read', 'settings' )
@@ -132,6 +130,9 @@ function useBlockEditorSettings( settings, postType, postId ) {
 					postId
 				)?._links?.hasOwnProperty( 'wp:action-unfiltered-html' ),
 				focusMode: get( 'core', 'focusMode' ),
+				hasFixedToolbar:
+					get( 'core', 'fixedToolbar' ) || ! isLargeViewport,
+				isDistractionFree: get( 'core', 'distractionFree' ),
 				keepCaretInsideBlock: get( 'core', 'keepCaretInsideBlock' ),
 				reusableBlocks: isWeb
 					? getEntityRecords( 'postType', 'wp_block', {
@@ -145,10 +146,9 @@ function useBlockEditorSettings( settings, postType, postId ) {
 				userPatternCategories: getUserPatternCategories(),
 				restBlockPatterns: getBlockPatterns(),
 				restBlockPatternCategories: getBlockPatternCategories(),
-				getPostLinkProps: postLinkProps,
 			};
 		},
-		[ postType, postId ]
+		[ postType, postId, isLargeViewport ]
 	);
 
 	const settingsBlockPatterns =
@@ -226,6 +226,8 @@ function useBlockEditorSettings( settings, postType, postId ) {
 			),
 			allowRightClickOverrides,
 			focusMode: focusMode && ! forceDisableFocusMode,
+			hasFixedToolbar,
+			isDistractionFree,
 			keepCaretInsideBlock,
 			mediaUpload: hasUploadPermissions ? mediaUpload : undefined,
 			__experimentalReusableBlocks: reusableBlocks,
@@ -257,12 +259,13 @@ function useBlockEditorSettings( settings, postType, postId ) {
 					? [ [ 'core/navigation', {}, [] ] ]
 					: settings.template,
 			__experimentalSetIsInserterOpened: setIsInserterOpened,
-			__experimentalGetPostLinkProps: getPostLinkProps,
 		} ),
 		[
 			allowRightClickOverrides,
 			focusMode,
 			forceDisableFocusMode,
+			hasFixedToolbar,
+			isDistractionFree,
 			keepCaretInsideBlock,
 			settings,
 			hasUploadPermissions,
@@ -278,7 +281,6 @@ function useBlockEditorSettings( settings, postType, postId ) {
 			pageForPosts,
 			postType,
 			setIsInserterOpened,
-			getPostLinkProps,
 		]
 	);
 }

@@ -82,6 +82,10 @@ class DependencyExtractionWebpackPlugin {
 				: defaultRequestToExternal( request );
 		}
 
+		if ( this.useModules && externalRequest === true ) {
+			externalRequest = request;
+		}
+
 		if ( externalRequest ) {
 			this.externalizedDeps.add( request );
 
@@ -139,7 +143,7 @@ class DependencyExtractionWebpackPlugin {
 		 * @type {webpack.ExternalsPlugin}
 		 */
 		this.externalsPlugin = new webpack.ExternalsPlugin(
-			this.useModules ? 'module' : 'window',
+			this.useModules ? 'import' : 'window',
 			this.externalizeWpDeps.bind( this )
 		);
 
