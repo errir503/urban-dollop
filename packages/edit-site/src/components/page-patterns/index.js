@@ -20,11 +20,7 @@ import {
 	BlockPreview,
 	privateApis as blockEditorPrivateApis,
 } from '@wordpress/block-editor';
-import {
-	DataViews,
-	sortByTextFields,
-	getPaginationResults,
-} from '@wordpress/dataviews';
+import { DataViews, filterSortAndPaginate } from '@wordpress/dataviews';
 import {
 	Icon,
 	header,
@@ -175,7 +171,12 @@ function Preview( { item, categoryId, viewType } ) {
 				>
 					{ isEmpty && isTemplatePart && __( 'Empty template part' ) }
 					{ isEmpty && ! isTemplatePart && __( 'Empty pattern' ) }
-					{ ! isEmpty && <BlockPreview blocks={ item.blocks } /> }
+					{ ! isEmpty && (
+						<BlockPreview
+							blocks={ item.blocks }
+							viewportWidth={ item.viewportWidth }
+						/>
+					) }
 				</PreviewWrapper>
 			</div>
 			{ ariaDescriptions.map( ( ariaDescription, index ) => (
@@ -296,7 +297,6 @@ export default function DataviewsPatterns() {
 			{
 				header: __( 'Title' ),
 				id: 'title',
-				getValue: ( { item } ) => item.title,
 				render: ( { item } ) => (
 					<Title item={ item } categoryId={ categoryId } />
 				),
@@ -338,27 +338,12 @@ export default function DataviewsPatterns() {
 		}
 	}, [ categoryId, previousCategoryId ] );
 	const { data, paginationInfo } = useMemo( () => {
-		if ( ! patterns ) {
-			return {
-				data: EMPTY_ARRAY,
-				paginationInfo: { totalItems: 0, totalPages: 0 },
-			};
-		}
-		let filteredData = [ ...patterns ];
-		// Handle sorting.
-		if ( view.sort ) {
-			filteredData = sortByTextFields( {
-				data: filteredData,
-				view,
-				fields,
-				textFields: [ 'title', 'author' ],
-			} );
-		}
-		// Handle pagination.
-		return getPaginationResults( {
-			data: filteredData,
-			view,
-		} );
+		// Since filters are applied server-side,
+		// we need to remove them from the view
+		const viewWithoutFilters = { ...view };
+		delete viewWithoutFilters.search;
+		viewWithoutFilters.filters = [];
+		return filterSortAndPaginate( patterns, viewWithoutFilters, fields );
 	}, [ patterns, view, fields ] );
 
 	const actions = useMemo(
